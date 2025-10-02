@@ -1,0 +1,81 @@
+
+bazel_dep(name = "bazel_skylib", version = "1.8.2")
+bazel_dep(name = "rules_oci", version = "2.2.6")
+bazel_dep(name = "tar.bzl", version = "0.5.6")
+bazel_dep(name = "rules_distroless", version = "0.0.0", repo_name = "rules_deb")
+local_path_override(
+    module_name = "rules_distroless",
+    path = "../rules_distroless"
+)
+
+
+include("//dockers/docker-base-bookworm:base_bookworm.MODULE.bazel")
+
+
+# These are needed to build p4rt
+
+single_version_override(
+    module_name = "abseil-cpp",
+    version = "20240722.0"
+)
+
+single_version_override(
+    module_name = "grpc",
+    version = "1.71.1",
+)
+
+bazel_dep(name = "rules_boost", version = "0.0.0")
+archive_override(
+    module_name = "rules_boost",
+    urls = ["https://github.com/nelhage/rules_boost/archive/a0643ef5ea1f939da59c42a6a5f21d1c0ffcff4f.zip"],
+    strip_prefix = "rules_boost-a0643ef5ea1f939da59c42a6a5f21d1c0ffcff4f",
+    sha256 = ""
+)
+boost = use_extension("@rules_boost//:boost/repositories.bzl", "non_module_dependencies")
+use_repo(
+    boost,
+    "boost",
+)
+
+
+
+# P4
+bazel_dep(name = "p4runtime", repo_name = "com_github_p4lang_p4runtime")
+local_path_override(
+    module_name = "p4runtime",
+    path = "../p4runtime/proto"
+)
+
+bazel_dep(name = "p4constraints", repo_name = "com_github_p4lang_p4_constraints")
+local_path_override(
+    module_name = "p4constraints",
+    path = "../p4-constraints"
+)
+
+
+bazel_dep(name = "p4c", repo_name = "com_github_p4lang_p4c")
+local_path_override(
+    module_name = "p4c",
+    path = "../p4c"
+)
+
+
+
+bazel_dep(name = "gutil", version = "20250502.0", repo_name = "com_google_gutil")
+local_path_override(
+    module_name = "gutil",
+    path = "../gutil"
+)
+
+
+bazel_dep(name = "sonic-swss-common", version = "0.0.0", repo_name = "sonic_swss_common")
+local_path_override(
+    module_name = "sonic-swss-common",
+    path = "../sonic-swss-common"
+)
+
+bazel_dep(name = "sonic-pins", version = "0.0.0")
+local_path_override(
+    module_name = "sonic-pins",
+    path = "../sonic-pins"
+)

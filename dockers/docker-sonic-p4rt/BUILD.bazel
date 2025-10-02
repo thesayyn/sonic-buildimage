@@ -1,0 +1,40 @@
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load")
+load("@tar.bzl", "tar")
+
+
+tar(
+    name = "files",
+    srcs = [
+        "start.sh",
+        "p4rt.sh",
+        "p4rt_vars.j2",
+        "supervisord.conf",
+        "critical_processes"
+    ],
+    mtree = [
+        "./usr/bin/start.sh type=file contents=$(location :start.sh)",
+        "./usr/bin/p4rt.j2 type=file contents=$(location :p4rt.sh)",
+        "./usr/share/sonic/templates/p4rt_vars.j2 type=file contents=$(location :p4rt_vars.j2)",
+        "./etc/supervisor/conf.d/supervisord.conf type=file contents=$(location :supervisord.conf)",
+        "./etc/supervisor/critical_processes type=file contents=$(location :critical_processes)",
+    ]
+)
+
+oci_image(
+    name = "docker-sonic-p4rt",
+    base = "//dockers/docker-base-bookworm",
+    tars = [
+        ":files",
+        "@sonic-pins//p4rt_app:p4rt_binaries"
+    ],
+    env = {
+        "DEBIAN_FRONTEND": "noninteractive"
+    },
+    entrypoint = ["/usr/local/bin/supervisord"],
+)
+
+oci_load(
+    name = "load",
+    image = ":docker-sonic-p4rt",
+    repo_tags = ["p4rt:latest"]
+)

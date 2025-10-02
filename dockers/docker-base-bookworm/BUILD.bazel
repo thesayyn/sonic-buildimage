@@ -1,0 +1,101 @@
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load")
+load("@rules_deb//distroless:defs.bzl", "flatten", "group", "passwd")
+load("@tar.bzl", "tar", "mutate")
+
+
+
+passwd(
+    name = "passwd",
+    entries = [
+        {
+            "uid": 0,
+            "gid": 0,
+            "home": "/root",
+            "shell": "/bin/bash",
+            "username": "root",
+        }
+    ],
+)
+
+group(
+    name = "group",
+    entries = [
+        {
+            "name": "root",
+            "gid": 0,
+        },
+    ],
+)
+
+
+tar(
+    name = "rootfs",
+    srcs = glob(["etc/**/*", "root/*"]),
+    mutate = mutate(strip_prefix = package_name())
+)
+
+tar(
+    name = "rootdirslinks",
+    mtree = [
+        "./var/log/supervisor type=dir",
+        "./etc/supervisor/conf.d type=dir",
+        "./usr/bin/vim.tiny type=link link=/usr/bin/vim"
+    ]
+)
+
+
+flatten(
+    name = "flat",
+    tars = [
+        "@focal//base-files",
+        ":passwd",
+        ":group",
+        "@focal//bash",
+        "@focal//curl",
+        "@focal//less",
+        "@focal//perl",
+        "@focal//procps",
+        "@focal//python3",
+        "@focal//python3-distutils",
+        "@focal//python3-pip",
+        "@focal//python3-setuptools",
+        "@focal//python3-wheel",
+        "@focal//python-is-python3",
+        "@focal//vim-tiny",
+        "@focal//rsyslog",
+        "@focal//redis-tools",
+        "@focal//libdaemon0",
+        "@focal//libdbus-1-3",
+        "@focal//libjansson4",
+        "@focal//iproute2",
+        "@focal//net-tools",
+        "@focal//jq",
+        "@focal//libzmq5",
+        "@focal//libwrap0",
+        "@focal//libatomic1",
+        "@supervisord//:supervisord"
+    ],
+    deduplicate = True
+)
+
+oci_image(
+    name = "docker-base-bookworm",
+    tars = [
+        ":rootfs",
+        ":rootdirslinks",
+        ":flat",
+    ],
+    env = {
+        "DEBIAN_FRONTEND": "noninteractive"
+    },
+    entrypoint = ["/usr/local/bin/supervisord"],
+    architecture = "amd64",
+    os = "linux",
+    visibility = ["//visibility:public"]
+)
+
+oci_load(
+    name = "load",
+    image = "docker-base-bookworm",
+    repo_tags = ["docker-base-bookworm:latest"]
+)
