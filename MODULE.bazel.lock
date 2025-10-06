@@ -10,7 +10,6 @@
     "https://bcr.bazel.build/modules/apple_support/1.22.1/MODULE.bazel": "90bd1a660590f3ceffbdf524e37483094b29352d85317060b2327fff8f3f4458",
     "https://bcr.bazel.build/modules/apple_support/1.23.1/MODULE.bazel": "53763fed456a968cf919b3240427cf3a9d5481ec5466abc9d5dc51bc70087442",
     "https://bcr.bazel.build/modules/apple_support/1.23.1/source.json": "d888b44312eb0ad2c21a91d026753f330caa48a25c9b2102fae75eb2b0dcfdd2",
-    "https://bcr.bazel.build/modules/aspect_bazel_lib/1.40.2/MODULE.bazel": "94faac347405327a3bb58382da0f8be7e0f266a4ab2ee094aa34aada2720a672",
     "https://bcr.bazel.build/modules/aspect_bazel_lib/2.14.0/MODULE.bazel": "2b31ffcc9bdc8295b2167e07a757dbbc9ac8906e7028e5170a3708cecaac119f",
     "https://bcr.bazel.build/modules/aspect_bazel_lib/2.19.3/MODULE.bazel": "253d739ba126f62a5767d832765b12b59e9f8d2bc88cc1572f4a73e46eb298ca",
     "https://bcr.bazel.build/modules/aspect_bazel_lib/2.19.3/source.json": "ffab9254c65ba945f8369297ad97ca0dec213d3adc6e07877e23a48624a8b456",
@@ -82,8 +81,6 @@
     "https://bcr.bazel.build/modules/gazelle/0.41.0/MODULE.bazel": "fdce8a8f5129d5b6d693d91cb191d0a014fdcb88e9094e528325a7165de2a826",
     "https://bcr.bazel.build/modules/gazelle/0.45.0/MODULE.bazel": "ecd19ebe9f8e024e1ccffb6d997cc893a974bcc581f1ae08f386bdd448b10687",
     "https://bcr.bazel.build/modules/gazelle/0.45.0/source.json": "111d182facc5f5e80f0b823d5f077b74128f40c3fd2eccc89a06f34191bd3392",
-    "https://bcr.bazel.build/modules/gcc_toolchain/0.9.0/MODULE.bazel": "a08077ca040d95566834e019b2016dd68e7a36fcb9c5c5cc174ec8afc07b1de7",
-    "https://bcr.bazel.build/modules/gcc_toolchain/0.9.0/source.json": "de659d124a7d78fa4c8c63590c2db429481ebf21403929dd03ffe999761619e6",
     "https://bcr.bazel.build/modules/gflags/2.2.2/MODULE.bazel": "ba6502c3fee189734f359454db8a49b7c08afd7271b32e7c6fc38c2d2e1edbeb",
     "https://bcr.bazel.build/modules/gflags/2.2.2/source.json": "b06d93702e18b5d75a69d53464c37ef5c2a9b4e237a8d4f2bf0217b3b0af2bee",
     "https://bcr.bazel.build/modules/glog/0.5.0/MODULE.bazel": "f5e4f5ae1c0642c84a06a68c5428a576b28bac2cd1dfa3faf5b6d683c69007a4",
@@ -377,7 +374,7 @@
     },
     "@@rules_distroless+//apt:extensions.bzl%apt": {
       "general": {
-        "bzlTransitiveDigest": "TXGuYZz92a20z3Swiztt6EMXkhEi1N5didaQ2zltsyc=",
+        "bzlTransitiveDigest": "E8F4MIPWVt7r2/TaOph+y50XA838DrQuaNxvj6o7N0k=",
         "usagesDigest": "ptztf4w0643JtCG7VhyOWlClTVHcMNIyULhk6WPQlxg=",
         "recordedFileInputs": {
           "@@sonic-swss-common+//packages.lock": "19a47369f0d8d47e114d31c70385410f49b8e03bd07af29eb6f27159a54f3723"
