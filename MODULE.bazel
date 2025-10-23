@@ -1,5 +1,9 @@
-
+bazel_dep(name = "rules_cc", version = "0.2.10")
+bazel_dep(name = "platforms", version = "1.0.0")
 bazel_dep(name = "bazel_skylib", version = "1.8.2")
+bazel_dep(name = "aspect_rules_py", version = "1.6.4")
+bazel_dep(name = "rules_python", version = "1.6.3")
+
 bazel_dep(name = "rules_oci", version = "2.2.6")
 bazel_dep(name = "tar.bzl", version = "0.5.6")
 bazel_dep(name = "rules_distroless", version = "0.0.0", repo_name = "rules_deb")
@@ -8,9 +12,26 @@ local_path_override(
     path = "../rules_distroless"
 )
 
+# archive_override(
+#     module_name = "aspect_rules_py",
+#     urls = [
+#         "https://github.com/aspect-build/rules_py/archive/refs/heads/arrdem/feat-pip.tar.gz"
+#     ],
+#     strip_prefix = "rules_py-arrdem-feat-pip",
+#     integrity = "sha256-wwJ6xedKq0WbDeH+IB17v1EdFENGmhNgTrNeYOwEyVU="
+# )
+
+
+local_path_override(
+    module_name = "aspect_rules_py",
+    path = "../rules_py"
+)
+
+python = use_extension("@rules_python//python/extensions:python.bzl", "python")
+python.toolchain(python_version = "3.11.6")
 
 include("//dockers/docker-base-bookworm:base_bookworm.MODULE.bazel")
-
+include("//toolchains:gcc.MODULE.bazel")
 
 # These are needed to build p4rt
 

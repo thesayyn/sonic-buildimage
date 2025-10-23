@@ -1,8 +1,23 @@
 load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load")
 load("@rules_deb//distroless:defs.bzl", "flatten", "group", "passwd")
 load("@tar.bzl", "tar", "mutate")
+load("@aspect_rules_py//py/unstable:defs.bzl", "py_venv_binary")
+load(":site_packages.bzl", "site_packages")
 
 
+site_packages(
+    name = "site-packages",
+    srcs = [
+        "@pip//supervisor",
+        "@pip//supervisord_dependent_startup",
+        "@pip//j2cli"
+    ],
+    mutate = mutate(
+        strip_prefix = "install",
+        package_dir = "./usr",
+        awk_script = ":mutate.awk"
+    )
+)
 
 passwd(
     name = "passwd",
@@ -37,6 +52,7 @@ tar(
 tar(
     name = "rootdirslinks",
     mtree = [
+        "./bin/sh type=link link=/bin/bash",
         "./var/log/supervisor type=dir",
         "./etc/supervisor/conf.d type=dir",
         "./usr/bin/vim.tiny type=link link=/usr/bin/vim"
@@ -47,33 +63,58 @@ tar(
 flatten(
     name = "flat",
     tars = [
-        "@focal//base-files",
+        "@bookworm//base-files",
+        "@bookworm//ca-certificates",
+        "@bookworm//libc6",
+        "@bookworm//libc-bin",
+        "@bookworm//libssl3",
+        "@bookworm//netbase",
+        "@bookworm//openssl",
+        "@bookworm//tzdata",
+        "@bookworm//media-types",
+        "@bookworm//gcc-12-base",
+        "@bookworm//libgcc-s1",
+        "@bookworm//libgomp1",
+        "@bookworm//libgmpxx4ldbl",
+        "@bookworm//libstdc++6",
+        "@bookworm//binutils",
+        "@bookworm//krb5-multidev",
         ":passwd",
         ":group",
-        "@focal//bash",
-        "@focal//curl",
-        "@focal//less",
-        "@focal//perl",
-        "@focal//procps",
-        "@focal//python3",
-        "@focal//python3-distutils",
-        "@focal//python3-pip",
-        "@focal//python3-setuptools",
-        "@focal//python3-wheel",
-        "@focal//python-is-python3",
-        "@focal//vim-tiny",
-        "@focal//rsyslog",
-        "@focal//redis-tools",
-        "@focal//libdaemon0",
-        "@focal//libdbus-1-3",
-        "@focal//libjansson4",
-        "@focal//iproute2",
-        "@focal//net-tools",
-        "@focal//jq",
-        "@focal//libzmq5",
-        "@focal//libwrap0",
-        "@focal//libatomic1",
-        "@supervisord//:supervisord"
+        "@bookworm//bash",
+        "@bookworm//coreutils",
+        "@bookworm//curl",
+        "@bookworm//less",
+        "@bookworm//perl",
+        "@bookworm//procps",
+        "@bookworm//python3",
+        "@bookworm//python-is-python3",
+        "@bookworm//vim-tiny",
+        "@bookworm//rsyslog",
+        "@bookworm//redis-tools",
+        "@bookworm//libdaemon0",
+        "@bookworm//libdbus-1-3",
+        "@bookworm//libjansson4",
+        "@bookworm//iproute2",
+        "@bookworm//net-tools",
+        "@bookworm//jq",
+        "@bookworm//libzmq5",
+        "@bookworm//libwrap0",
+        "@bookworm//libatomic1",
+        "@bookworm//libgmp10",
+
+
+        # Transitives
+        "@bookworm//libhiredis-dev",
+        "@bookworm//libnl-3-dev",
+        "@bookworm//libnl-genl-3-dev",
+        "@bookworm//libnl-route-3-dev",
+        "@bookworm//libnl-nf-3-dev",
+        "@bookworm//libboost-dev",
+        "@bookworm//libboost-serialization-dev",
+        "@bookworm//uuid-dev",
+        "@bookworm//libzmq3-dev",
+        "@bookworm//libyang2-dev",
     ],
     deduplicate = True
 )
@@ -84,11 +125,12 @@ oci_image(
         ":rootfs",
         ":rootdirslinks",
         ":flat",
+        ":site-packages"
     ],
     env = {
         "DEBIAN_FRONTEND": "noninteractive"
     },
-    entrypoint = ["/usr/local/bin/supervisord"],
+    entrypoint = ["/usr/bin/supervisord"],
     architecture = "amd64",
     os = "linux",
     visibility = ["//visibility:public"]

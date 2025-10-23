@@ -1,0 +1,9 @@
+[project]
+name = "docker-base-bookworm"
+version = "0.0.1"
+requires-python = "==3.11.6"
+dependencies = [
+    "supervisor==4.2.5",
+    "supervisord-dependent-startup==1.4.0",
+    "j2cli"
+]
