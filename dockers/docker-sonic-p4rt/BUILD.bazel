@@ -25,7 +25,8 @@ oci_image(
     base = "//dockers/docker-base-bookworm",
     tars = [
         ":files",
-        "@sonic-pins//p4rt_app:p4rt_binaries"
+        "@sonic-pins//p4rt_app:p4rt_binaries",
+        "@sonic_swss_common//pyext:swsscommon_dist"
     ],
     env = {
         "DEBIAN_FRONTEND": "noninteractive"

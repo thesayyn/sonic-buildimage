@@ -31,7 +31,7 @@ python = use_extension("@rules_python//python/extensions:python.bzl", "python")
 python.toolchain(python_version = "3.11.6")
 
 include("//dockers/docker-base-bookworm:base_bookworm.MODULE.bazel")
-include("//toolchains:gcc.MODULE.bazel")
+
 
 # These are needed to build p4rt
 
@@ -100,3 +100,11 @@ local_path_override(
     module_name = "sonic-pins",
     path = "../sonic-pins"
 )
+
+bazel_dep(name = "sonic-build-infra", version = "0.0.0")
+local_path_override(
+    module_name = "sonic-build-infra",
+    path = "../sonic-build-infra"
+)
+
+register_toolchains("@sonic-build-infra//toolchains/gcc:host_gcc_toolchain")
