@@ -1,6 +1,8 @@
 load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load")
 load("@tar.bzl", "tar")
 
+exports_files(["p4rt_vars.j2"])
+
 
 tar(
     name = "files",

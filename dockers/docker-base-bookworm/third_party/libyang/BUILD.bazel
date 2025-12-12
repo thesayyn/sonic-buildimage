@@ -1,0 +1,20 @@
+load("@aspect_rules_py//py/unstable:defs.bzl", "py_venv")
+load(":sdist_build_with_deps.bzl", "sdist_build_with_deps")
+
+# Custom sdist_build for libyang that includes cffi as a build dependency
+py_venv(
+    name = "build_venv",
+    deps = [
+        "@pip//setuptools",
+        "@pip//build",
+        "@pip//cffi",  # Required build dependency for libyang
+    ],
+)
+
+sdist_build_with_deps(
+    name = "libyang",
+    src = "@sdist__libyang__b83ad300//file",
+    venv = ":build_venv",
+    dep = "@bookworm//libyang2-dev:libyang2",
+    visibility = ["//visibility:public"],
+)

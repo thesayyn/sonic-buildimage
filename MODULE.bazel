@@ -1,36 +1,49 @@
+module(name = "sonic-buildimage")
+
 bazel_dep(name = "rules_cc", version = "0.2.10")
 bazel_dep(name = "platforms", version = "1.0.0")
 bazel_dep(name = "bazel_skylib", version = "1.8.2")
-bazel_dep(name = "aspect_rules_py", version = "1.6.4")
 bazel_dep(name = "rules_python", version = "1.6.3")
-
 bazel_dep(name = "rules_oci", version = "2.2.6")
-bazel_dep(name = "tar.bzl", version = "0.5.6")
+bazel_dep(name = "tar.bzl", version = "0.5.5")
+
 bazel_dep(name = "rules_distroless", version = "0.0.0", repo_name = "rules_deb")
 local_path_override(
     module_name = "rules_distroless",
     path = "../rules_distroless"
 )
 
-# archive_override(
-#     module_name = "aspect_rules_py",
-#     urls = [
-#         "https://github.com/aspect-build/rules_py/archive/refs/heads/arrdem/feat-pip.tar.gz"
-#     ],
-#     strip_prefix = "rules_py-arrdem-feat-pip",
-#     integrity = "sha256-wwJ6xedKq0WbDeH+IB17v1EdFENGmhNgTrNeYOwEyVU="
-# )
-
-
-local_path_override(
+bazel_dep(name = "aspect_rules_py", version = "1.7.1")
+single_version_override(
     module_name = "aspect_rules_py",
-    path = "../rules_py"
+    patch_strip = 1,
+    patches = [
+        "//patches:aspect_rules_py.patch",
+    ],
 )
 
 python = use_extension("@rules_python//python/extensions:python.bzl", "python")
 python.toolchain(python_version = "3.11.6")
 
 include("//dockers/docker-base-bookworm:base_bookworm.MODULE.bazel")
+
+bazel_dep(name = "sonic-py-common", version = "0.0.0", repo_name = "sonic_py_common")
+local_path_override(
+    module_name = "sonic-py-common",
+    path = "src/sonic-py-common",
+)
+
+bazel_dep(name = "sonic-config-engine", version = "0.0.0", repo_name = "sonic_config_engine")
+local_path_override(
+    module_name = "sonic-config-engine",
+    path = "src/sonic-config-engine",
+)
+
+bazel_dep(name = "sonic-yang-mgmt", version = "0.0.0", repo_name = "sonic_yang_mgmt")
+local_path_override(
+    module_name = "sonic-yang-mgmt",
+    path = "src/sonic-yang-mgmt",
+)
 
 
 # These are needed to build p4rt
@@ -95,6 +108,12 @@ local_path_override(
     path = "../sonic-swss-common"
 )
 
+bazel_dep(name = "sonic-py-swsssdk", version = "0.0.0", repo_name = "sonic_py_swsssdk")
+local_path_override(
+    module_name = "sonic-py-swsssdk",
+    path = "../sonic-py-swsssdk"
+)
+
 bazel_dep(name = "sonic-pins", version = "0.0.0")
 local_path_override(
     module_name = "sonic-pins",
@@ -108,3 +127,13 @@ local_path_override(
 )
 
 register_toolchains("@sonic-build-infra//toolchains/gcc:host_gcc_toolchain")
+
+# Download libyang 2.5.0 sdist for custom build with cffi as build dependency
+# Version 2.5.0 is compatible with libyang C library 2.29.x (bookworm has 2.29.2)
+http_file = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_file")
+http_file(
+    name = "sdist__libyang__b83ad300",
+    urls = ["https://files.pythonhosted.org/packages/f9/a7/02662fbafec3ebf93bf322f1b70937e1e38cfefac422a39c2dc0fd79f59a/libyang-2.5.0.tar.gz"],
+    sha256 = "b83ad3003747d5d19111f6dd8522f962e3bbf7f5a7be79abd2d9c33745a036f2",
+    downloaded_file_path = "libyang-2.5.0.tar.gz",
+)

@@ -23,7 +23,7 @@ def site_packages(name, srcs, **kwargs):
         srcs = srcs,
     )
     tar(
-        name = "site-packages",
-        srcs = [name + "_info"],
+        name = name,
+        srcs = [":" + name + "_info"],
         **kwargs
     )

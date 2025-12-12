@@ -59,13 +59,15 @@ apt.install(
         "libatomic1",
         "libgmp10",
         "libgmpxx4ldbl",
+        # libyang python bindings build deps
+        "libyang2-dev",
     ]
 )
 
 use_repo(apt, "bookworm")
 
 
-uv = use_extension("@aspect_rules_py//uv:extension.bzl", "uv")
+uv = use_extension("@aspect_rules_py//uv/unstable:extension.bzl", "uv")
 uv.declare_hub(hub_name = "pip")
 uv.declare_venv(
     hub_name = "pip",
@@ -74,71 +76,12 @@ uv.declare_venv(
 uv.lockfile(
     hub_name = "pip",
     venv_name = "default",
-    lockfile = "//dockers/docker-base-bookworm:uv.lock",
+    src = "//dockers/docker-base-bookworm:uv.lock",
+)
+uv.override_requirement(
+    hub_name = "pip",
+    requirement = "libyang",
+    target = "//dockers/docker-base-bookworm/third_party/libyang",
+    venv_name = "default",
 )
 use_repo(uv, "pip")
-
-
-
-
-
-
-
-http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-http_archive(
-    name = "supervisord",
-    urls = [
-        "https://files.pythonhosted.org/packages/0e/65/5e726c372da8a5e35022a94388b12252710aad0c2351699c3d76ae8dba78/supervisor-4.3.0-py2.py3-none-any.whl"
-    ],
-    type = "zip",
-    build_file_content = """
-load("@tar.bzl", "tar", "mutate")
-load("@bazel_skylib//rules:write_file.bzl", "write_file")
-load("@rules_deb//distroless:defs.bzl", "flatten")
-
-BIN='''\\
-#!/usr/bin/python3
-# -*- coding: utf-8 -*-
-import re
-import sys
-from supervisor.supervisord import main
-if __name__ == '__main__':
-    sys.argv[0] = re.sub(r'(-script\\\\.pyw|\\\\.exe)?$', '', sys.argv[0])
-    sys.exit(main())
-'''
-
-write_file(
-    name = "bin_out",
-    content = [BIN],
-    out = "supervisord.bin",
-    is_executable = True,
-)
-
-tar(
-    name = "pkg",
-    srcs = glob(["**/*"], exclude = ["*.bazel"]),
-    mutate = mutate(
-        package_dir = "./usr/lib/python3/dist-packages"
-    )
-)
-
-
-tar(
-    name = "bin",
-    srcs = [":bin_out"],
-    mtree = [
-        "./usr/local/bin/supervisord type=file contents=$(location :bin_out)"
-    ]
-)
-
-flatten(
-    name = "supervisord",
-    tars = [
-        ":pkg",
-        ":bin"
-    ],
-    visibility = ["//visibility:public"]
-)
-
-"""
-)

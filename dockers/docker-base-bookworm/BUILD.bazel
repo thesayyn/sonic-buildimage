@@ -4,6 +4,8 @@ load("@tar.bzl", "tar", "mutate")
 load("@aspect_rules_py//py/unstable:defs.bzl", "py_venv_binary")
 load(":site_packages.bzl", "site_packages")
 
+exports_files(["mutate.awk"])
+
 
 site_packages(
     name = "site-packages",
@@ -89,6 +91,7 @@ flatten(
         "@bookworm//procps",
         "@bookworm//python3",
         "@bookworm//python-is-python3",
+        "@bookworm//python3-dev",
         "@bookworm//vim-tiny",
         "@bookworm//rsyslog",
         "@bookworm//redis-tools",
@@ -125,7 +128,7 @@ oci_image(
         ":rootfs",
         ":rootdirslinks",
         ":flat",
-        ":site-packages"
+        ":site-packages",
     ],
     env = {
         "DEBIAN_FRONTEND": "noninteractive"
