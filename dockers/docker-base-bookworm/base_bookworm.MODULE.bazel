@@ -14,7 +14,6 @@ apt.sources_list(
     uris = ["https://snapshot.debian.org/archive/debian-security/20251001T023456Z"],
 )
 
-
 apt.install(
     dependency_set = "bookworm",
     target_release = "bookworm",
@@ -59,7 +58,7 @@ apt.install(
         "libatomic1",
         "libgmp10",
         "libgmpxx4ldbl",
-        # libyang python bindings build deps
+        "libpcre2-8-0",
         "libyang2-dev",
     ]
 )
@@ -81,7 +80,7 @@ uv.lockfile(
 uv.override_requirement(
     hub_name = "pip",
     requirement = "libyang",
-    target = "//dockers/docker-base-bookworm/third_party/libyang",
+    target = "@libyang3_py3//:libyang3_py3",
     venv_name = "default",
 )
 use_repo(uv, "pip")

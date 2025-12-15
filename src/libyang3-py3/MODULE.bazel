@@ -1,0 +1,40 @@
+module(name = "libyang3_py3", version = "3.1.0")
+
+bazel_dep(name = "rules_python", version = "1.6.3")
+bazel_dep(name = "aspect_rules_py", version = "1.7.1")
+bazel_dep(name = "rules_cc", version = "0.2.10")
+bazel_dep(name = "libyang3", version = "3.12.2")
+
+# Set up pip dependencies for building using uv lockfile
+uv = use_extension("@aspect_rules_py//uv/unstable:extension.bzl", "uv")
+uv.declare_hub(hub_name = "libyang3_py3_pip")
+uv.declare_venv(
+    hub_name = "libyang3_py3_pip",
+    venv_name = "default",
+)
+uv.lockfile(
+    hub_name = "libyang3_py3_pip",
+    venv_name = "default",
+    src = "//:uv.lock",
+)
+use_repo(uv, "libyang3_py3_pip")
+
+# libyang-python source from GitHub (v3.1.0)
+http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+http_archive(
+    name = "libyang_python_src",
+    urls = ["https://github.com/CESNET/libyang-python/archive/refs/tags/v3.1.0.tar.gz"],
+    sha256 = "4c58ed013e53dda2969e2fd386dbb6251f4a5fa599faa8c85e0e0100a9d97ef9",
+    strip_prefix = "libyang-python-3.1.0",
+    build_file = "//:libyang3_py3.BUILD",
+    # Apply patch series from Makefile (QUILT_PATCHES=../patch quilt push -a)
+    # Use native patch tool with fuzz support for compatibility
+    patch_tool = "patch",
+    patches = [
+        "//:patch/0001-debian.patch",
+        "//:patch/0002-pr134-json-string-datatypes.patch",
+        "//:patch/0003-pr132-backlinks.patch",
+        "//:patch/0004-pr141-test-crash.patch",
+    ],
+    patch_args = ["-p1", "-F3"],
+)

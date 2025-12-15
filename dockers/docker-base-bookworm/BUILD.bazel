@@ -41,6 +41,10 @@ group(
             "name": "root",
             "gid": 0,
         },
+        {
+            "name": "adm",
+            "gid": 4,
+        },
     ],
 )
 
@@ -50,6 +54,7 @@ tar(
     srcs = glob(["etc/**/*", "root/*"]),
     mutate = mutate(strip_prefix = package_name())
 )
+
 
 tar(
     name = "rootdirslinks",
@@ -117,6 +122,7 @@ flatten(
         "@bookworm//libboost-serialization-dev",
         "@bookworm//uuid-dev",
         "@bookworm//libzmq3-dev",
+        "@bookworm//libpcre2-8-0",
         "@bookworm//libyang2-dev",
     ],
     deduplicate = True
@@ -129,6 +135,7 @@ oci_image(
         ":rootdirslinks",
         ":flat",
         ":site-packages",
+        "@sonic_supervisord_utilities//:dist",
     ],
     env = {
         "DEBIAN_FRONTEND": "noninteractive"
