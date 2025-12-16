@@ -146,3 +146,15 @@ local_path_override(
     module_name = "libyang3_py3",
     path = "src/libyang3-py3",
 )
+
+bazel_dep(name = "sonic-platform-common", version = "0.0.0", repo_name = "sonic_platform_common")
+local_path_override(
+    module_name = "sonic-platform-common",
+    path = "../sonic-platform-common",
+)
+
+bazel_dep(name = "sonic-platform-daemons", version = "0.0.0", repo_name = "sonic_platform_daemons")
+local_path_override(
+    module_name = "sonic-platform-daemons",
+    path = "../sonic-platform-daemons",
+)
