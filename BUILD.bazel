@@ -1,0 +1,10 @@
+# Root BUILD file for sonic-buildimage
+# Required for Bazel module extensions that reference the root package
+
+package(default_visibility = ["//visibility:public"])
+
+# Marker target for extensions that need to find the workspace root
+filegroup(
+    name = "all",
+    srcs = [],
+)

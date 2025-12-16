@@ -1,0 +1,29 @@
+load("@rules_deb//distroless:defs.bzl", "flatten")
+
+# Create a sysroot from Debian Bookworm packages
+# This sysroot contains all necessary headers and libraries for C/C++ compilation
+# targeting Debian Bookworm's GLIBC 2.36 and GLIBCXX 3.4.30
+flatten(
+    name = "bookworm_sysroot",
+    tars = [
+        "@bookworm//libc6-dev",
+        "@bookworm//libstdc++-12-dev",
+        "@bookworm//linux-libc-dev",
+        "@bookworm//libgcc-12-dev",
+        # Base runtime libraries needed for linking
+        "@bookworm//libc6",
+        "@bookworm//libstdc++6",
+        "@bookworm//libgcc-s1",
+        # Additional development libraries for USB and atomic operations
+        "@bookworm//libudev-dev",
+        "@bookworm//libatomic1",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+# Export the sysroot as a filegroup for use with toolchains_llvm
+filegroup(
+    name = "sysroot",
+    srcs = [":bookworm_sysroot"],
+    visibility = ["//visibility:public"],
+)
