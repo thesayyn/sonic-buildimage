@@ -158,3 +158,9 @@ local_path_override(
     module_name = "sonic-platform-daemons",
     path = "../sonic-platform-daemons",
 )
+
+bazel_dep(name = "sonic-gnmi", version = "0.0.0", repo_name = "gnmi")
+local_path_override(
+    module_name = "sonic-gnmi",
+    path = "../sonic-gnmi",
+)
