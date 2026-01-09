@@ -48,6 +48,51 @@ tar(
     ],
 )
 
+# Package libyang 1.x runtime libraries using genrule for proper path handling
+genrule(
+    name = "libyang_libs",
+    srcs = [
+        "@gnmi//:libyang_shared_libs",
+        "@gnmi//:libyang_extension_plugins",
+        "@gnmi//:libyang_user_type_plugins",
+    ],
+    outs = ["libyang_libs.tar"],
+    cmd = """
+        mkdir -p tmp/usr/lib/x86_64-linux-gnu/libyang/extensions
+        mkdir -p tmp/usr/lib/x86_64-linux-gnu/libyang/user_types
+        for f in $(locations @gnmi//:libyang_shared_libs); do
+            cp $$f tmp/usr/lib/x86_64-linux-gnu/
+        done
+        for f in $(locations @gnmi//:libyang_extension_plugins); do
+            cp $$f tmp/usr/lib/x86_64-linux-gnu/libyang/extensions/
+        done
+        for f in $(locations @gnmi//:libyang_user_type_plugins); do
+            cp $$f tmp/usr/lib/x86_64-linux-gnu/libyang/user_types/
+        done
+        tar -C tmp -cf $@ .
+        rm -rf tmp
+    """,
+)
+
+# Package libusb runtime library and its dependencies (libudev) from apt
+genrule(
+    name = "libusb_libs",
+    srcs = [
+        "@bookworm//libusb-1.0-0:data",
+        "@bookworm//libudev1:data",
+        "@bookworm//libpcre3:data",
+    ],
+    outs = ["libusb_libs.tar"],
+    cmd = """
+        mkdir -p tmp
+        for src in $(SRCS); do
+            tar -xzf $$src -C tmp 2>/dev/null || true
+        done
+        tar -C tmp -cf $@ .
+        rm -rf tmp
+    """,
+)
+
 oci_image(
     name = "docker-sonic-gnmi",
     base = "//dockers/docker-base-bookworm",
@@ -55,6 +100,8 @@ oci_image(
         ":files",
         ":gnmi_binaries",
         ":swsscommon_libs",
+        ":libyang_libs",
+        ":libusb_libs",
         # TODO: Add swsscommon Python bindings when available
         # "@sonic_swss_common//pyext:swsscommon_dist",
     ],
