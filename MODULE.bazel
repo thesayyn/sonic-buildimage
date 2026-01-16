@@ -11,7 +11,8 @@ bazel_dep(name = "tar.bzl", version = "0.5.5")
 bazel_dep(name = "rules_distroless", version = "0.0.0", repo_name = "rules_deb")
 local_path_override(
     module_name = "rules_distroless",
-    path = "../rules_distroless"
+    path = "../../bazel-contrib/rules_distroless"
+    # path = "../rules_distroless"
 )
 
 bazel_dep(name = "aspect_rules_py", version = "1.7.1")
@@ -84,20 +85,20 @@ use_repo(
 bazel_dep(name = "p4runtime", repo_name = "com_github_p4lang_p4runtime")
 local_path_override(
     module_name = "p4runtime",
-    path = "../p4runtime/proto"
+    path = "../../p4lang/p4runtime/proto"
 )
 
 bazel_dep(name = "p4constraints", repo_name = "com_github_p4lang_p4_constraints")
 local_path_override(
     module_name = "p4constraints",
-    path = "../p4-constraints"
+    path = "../../p4lang/p4-constraints"
 )
 
 
 bazel_dep(name = "p4c", repo_name = "com_github_p4lang_p4c")
 local_path_override(
     module_name = "p4c",
-    path = "../p4c"
+    path = "../../p4lang/p4c"
 )
 
 
@@ -105,32 +106,33 @@ local_path_override(
 bazel_dep(name = "gutil", version = "20250502.0", repo_name = "com_google_gutil")
 local_path_override(
     module_name = "gutil",
-    path = "../gutil"
+    path = "../../google/gutil"
 )
 
 
 bazel_dep(name = "sonic-swss-common", version = "0.0.0", repo_name = "sonic_swss_common")
 local_path_override(
     module_name = "sonic-swss-common",
-    path = "../sonic-swss-common"
+    # path = "../sonic-swss-common"
+    path = "../../sonic-net/sonic-swss-common"
 )
 
 bazel_dep(name = "sonic-py-swsssdk", version = "0.0.0", repo_name = "sonic_py_swsssdk")
 local_path_override(
     module_name = "sonic-py-swsssdk",
-    path = "../sonic-py-swsssdk"
+    path = "../../sonic-net/sonic-py-swsssdk"
 )
 
 bazel_dep(name = "sonic-pins", version = "0.0.0")
 local_path_override(
     module_name = "sonic-pins",
-    path = "../sonic-pins"
+    path = "../../sonic-net/sonic-pins"
 )
 
 bazel_dep(name = "sonic-build-infra", version = "0.0.0")
 local_path_override(
     module_name = "sonic-build-infra",
-    path = "../sonic-build-infra"
+    path = "../../sonic-net/sonic-build-infra"
 )
 
 register_toolchains("@sonic-build-infra//toolchains/gcc:host_gcc_toolchain")
@@ -150,11 +152,11 @@ local_path_override(
 bazel_dep(name = "sonic-platform-common", version = "0.0.0", repo_name = "sonic_platform_common")
 local_path_override(
     module_name = "sonic-platform-common",
-    path = "../sonic-platform-common",
+    path = "../../sonic-net/sonic-platform-common",
 )
 
 bazel_dep(name = "sonic-platform-daemons", version = "0.0.0", repo_name = "sonic_platform_daemons")
 local_path_override(
     module_name = "sonic-platform-daemons",
-    path = "../sonic-platform-daemons",
+    path = "../../sonic-net/sonic-platform-daemons",
 )
