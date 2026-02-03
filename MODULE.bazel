@@ -160,3 +160,33 @@ local_path_override(
     module_name = "sonic-platform-daemons",
     path = "../../sonic-net/sonic-platform-daemons",
 )
+
+# TODO BL: This is just for swss, we should formalize this into a registry
+#          so that we can resolve dependencies.
+
+bazel_dep(name = "rules_shell", version = "0.6.1")
+bazel_dep(name = "bazel_lib", version = "3.1.1")
+
+bazel_dep(name = "sonic-swss", version = "0.0.0", repo_name = "sonic_swss")
+local_path_override(
+    module_name = "sonic-swss",
+    path = "../../sonic-net/sonic-swss"
+)
+
+bazel_dep(name = "sonic-sairedis", version = "0.0.0", repo_name = "sonic_sairedis")
+local_path_override(
+    module_name = "sonic-sairedis",
+    path = "../../sonic-net/sonic-sairedis",
+)
+
+bazel_dep(name = "sai", version = "0.0.0")
+local_path_override(
+    module_name = "sai",
+    path = "../../sonic-net/sonic-sairedis/SAI",
+)
+
+bazel_dep(name = "sonic-dash-api", version = "0.0.0", repo_name = "sonic_dash_api")
+local_path_override(
+    module_name = "sonic-dash-api",
+    path = "../../sonic-net/sonic-dash-api",
+)
