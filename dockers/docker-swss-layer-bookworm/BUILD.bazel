@@ -14,11 +14,11 @@ filegroup(
         # $(LIBSAIMETADATA) 
         "@sonic_sairedis//meta:libsaimetadata_dev_pkg",
         # $(LIBSAIREDIS) 
-        # "@sonic_sairedis//lib:sairedis",
+        "@sonic_sairedis//lib:libsairedis_dev_pkg",
         # # $(LIBSWSSCOMMON) 
         # "@sonic_swss_common//:libswsscommon",
         # # $(LIB_SONIC_DASH_API)
-        # "@sonic_dash_api//:dashapi",
+        "@sonic_dash_api//:libdashapi_dev_pkg",
   ],
 )
 
@@ -30,7 +30,7 @@ oci_image(
         "@sonic_swss//:debian-data",
         ":rdeps",
         # $(PYTHON3_SWSSCOMMON)
-        # "@sonic_swss_common//pyext:swsscommon_dist",
+        "@sonic_swss_common//pyext:swsscommon_dist",
     ],
     env = {
         "DEBIAN_FRONTEND": "noninteractive"
@@ -44,13 +44,11 @@ oci_image(
 oci_load(
     name = "load",
     image = ":docker-swss-layer-bookworm",
-    # TODO BL: repo tags
     repo_tags = ["docker-swss-layer-bookworm:latest"]
 )
 
 # TODO BL: we're ignoring this for now, I don't know what to do with it
 # RUN --mount=type=bind,from=base,target=/changes-to-image rsync -axAX --no-D --exclude=/sys --exclude=/proc --exclude=/dev --exclude=resolv.conf /changes-to-image/ /
-
 
 #######
 
