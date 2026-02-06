@@ -60,6 +60,13 @@ apt.install(
         "libgmpxx4ldbl",
         "libpcre2-8-0",
         "libyang2-dev",
+
+        # TODO BL: this is for docker-swss-layer-bookworm
+
+        # from rules/libteam.mk
+        "libteam5",
+        "libteam-dev",
+        "libteamdctl0",
     ]
 )
 

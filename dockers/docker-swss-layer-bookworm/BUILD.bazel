@@ -5,9 +5,7 @@ load("@tar.bzl", "tar")
 #          but right now are only part of the build graph
 #
 # TODO BL: These I haven't found yet
-# $(SWSS)_RDEPENDS += $(LIBTEAM) \
-#     $(LIBTEAMDCTL) \
-#     $(PROTOBUF) $(PROTOBUF_LITE) $(PYTHON3_PROTOBUF) 
+# $(SWSS)_RDEPENDS += $(PROTOBUF) $(PROTOBUF_LITE) $(PYTHON3_PROTOBUF) 
 filegroup(
   name = "rdeps",
   srcs = [
@@ -19,6 +17,11 @@ filegroup(
         # "@sonic_swss_common//:libswsscommon",
         # # $(LIB_SONIC_DASH_API)
         "@sonic_dash_api//:libdashapi_dev_pkg",
+
+        # # $(LIBTEAM)
+        "@bookworm//libteam5:data",
+        # # $(LIBTEAMDCTL)
+        "@bookworm//libteamdctl0:data",
   ],
 )
 
