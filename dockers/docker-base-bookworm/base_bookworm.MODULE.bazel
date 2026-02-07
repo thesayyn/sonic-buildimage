@@ -67,9 +67,25 @@ apt.install(
         "libteam5",
         "libteam-dev",
         "libteamdctl0",
-    ]
+
+        # from docker-orchagent/Dockerfile.j2
+        "ifupdown",
+        "arping",
+        # "iproute2", # TODO BL: Already here
+        "ndisc6",
+        "tcpdump",
+        "bridge-utils",
+        "conntrack",
+        "ndppd",
+        "python3-protobuf",
+        "pciutils",
+        "python3-netifaces",
+    ],
 )
 
+apt.lock(
+   into = "packages.lock",
+)
 use_repo(apt, "bookworm")
 
 

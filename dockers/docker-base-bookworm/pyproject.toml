@@ -25,4 +25,8 @@ dependencies = [
     "cffi",
     "build",
     "setuptools",
+
+    # TODO BL: maybe move to another project
+    # dockers-orchagent deps
+    "scapy==2.4.5",
 ]

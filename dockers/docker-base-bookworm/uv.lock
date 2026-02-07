@@ -91,6 +91,7 @@ dependencies = [
     { name = "natsort" },
     { name = "netaddr" },
     { name = "pyyaml" },
+    { name = "scapy" },
     { name = "setuptools" },
     { name = "supervisor" },
     { name = "supervisord-dependent-startup" },
@@ -114,6 +115,7 @@ requires-dist = [
     { name = "natsort" },
     { name = "netaddr", specifier = "==0.8.0" },
     { name = "pyyaml", specifier = "==6.0.1" },
+    { name = "scapy", specifier = "==2.4.5" },
     { name = "setuptools" },
     { name = "supervisor", specifier = "==4.2.5" },
     { name = "supervisord-dependent-startup", specifier = "==1.4.0" },
@@ -293,6 +295,12 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/73/9c/766e78d1efc0d1fca637a6b62cea1b4510a7fb93617eb805223294fef681/PyYAML-6.0.1-cp311-cp311-win32.whl", hash = "sha256:1635fd110e8d85d55237ab316b5b011de701ea0f29d07611174a1b42f1444741", size = 130286, upload-time = "2023-07-17T23:58:02.964Z" },
     { url = "https://files.pythonhosted.org/packages/b3/34/65bb4b2d7908044963ebf614fe0fdb080773fc7030d7e39c8d3eddcd4257/PyYAML-6.0.1-cp311-cp311-win_amd64.whl", hash = "sha256:bf07ee2fef7014951eeb99f56f39c9bb4af143d8aa3c21b1677805985307da34", size = 144699, upload-time = "2023-07-17T23:58:05.586Z" },
 ]
+
+[[package]]
+name = "scapy"
+version = "2.4.5"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/85/47/c919432ca258f354bb2c1e645623f891603f185bfc7563d4a21f6432e7ed/scapy-2.4.5.tar.gz", hash = "sha256:bc707e3604784496b6665a9e5b2a69c36cc9fb032af4864b29051531b24c8593", size = 1111959, upload-time = "2021-04-19T18:29:34.172Z" }
 
 [[package]]
 name = "setuptools"

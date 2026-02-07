@@ -18,10 +18,25 @@ filegroup(
         # # $(LIB_SONIC_DASH_API)
         "@sonic_dash_api//:libdashapi_dev_pkg",
 
+        # $(PYTHON3_SWSSCOMMON)
+        "@sonic_swss_common//pyext:swsscommon_dist",
+
         # # $(LIBTEAM)
         "@bookworm//libteam5:data",
         # # $(LIBTEAMDCTL)
         "@bookworm//libteamdctl0:data",
+  ],
+)
+
+filegroup(
+  name = "swss_runtime",
+  srcs = [
+     "@sonic_swss//:debian-data",
+     ":rdeps",
+  ],
+  visibility = [
+    "//dockers/docker-swss-layer-bookworm:__subpackages__",
+    "//dockers/docker-orchagent:__subpackages__",
   ],
 )
 
@@ -30,10 +45,7 @@ oci_image(
     name = "docker-swss-layer-bookworm",
     base = "//dockers/docker-config-engine-bookworm",
     tars = [
-        "@sonic_swss//:debian-data",
-        ":rdeps",
-        # $(PYTHON3_SWSSCOMMON)
-        "@sonic_swss_common//pyext:swsscommon_dist",
+      ":swss_runtime",
     ],
     env = {
         "DEBIAN_FRONTEND": "noninteractive"
@@ -42,6 +54,10 @@ oci_image(
     #          not sure of the difference
     entrypoint = ["/usr/bin/supervisord"],
     # entrypoint = ["/usr/local/bin/supervisord"],
+    visibility = [
+      "//dockers/docker-swss-layer-bookworm:__subpackages__",
+      "//dockers/docker-orchagent:__subpackages__",
+    ],
 )
 
 oci_load(
@@ -52,60 +68,3 @@ oci_load(
 
 # TODO BL: we're ignoring this for now, I don't know what to do with it
 # RUN --mount=type=bind,from=base,target=/changes-to-image rsync -axAX --no-D --exclude=/sys --exclude=/proc --exclude=/dev --exclude=resolv.conf /changes-to-image/ /
-
-#######
-
-
-####
-## rules/docker-swss-layer-bookworm.dep
-####
-#
-# DPATH       := $($(DOCKER_SWSS_LAYER_BOOKWORM)_PATH)
-# DEP_FILES   := $(SONIC_COMMON_FILES_LIST) rules/docker-swss-layer-bookworm.mk rules/docker-swss-layer-bookworm.dep
-# DEP_FILES   += $(SONIC_COMMON_BASE_FILES_LIST)
-# DEP_FILES   += $(shell git ls-files $(DPATH))
-#
-# $(DOCKER_SWSS_LAYER_BOOKWORM)_CACHE_MODE  := GIT_CONTENT_SHA
-# $(DOCKER_SWSS_LAYER_BOOKWORM)_DEP_FLAGS   := $(SONIC_COMMON_FLAGS_LIST)
-# $(DOCKER_SWSS_LAYER_BOOKWORM)_DEP_FILES   := $(DEP_FILES)
-
-# ###
-# # rules/docker-swss-layer-bookworm.mk
-# ###
-#
-# # bookworm-based docker image for sonic swss layer
-#
-# DOCKER_SWSS_LAYER_BOOKWORM= docker-swss-layer-bookworm.gz
-# $(DOCKER_SWSS_LAYER_BOOKWORM)_PATH = $(DOCKERS_PATH)/docker-swss-layer-bookworm
-#
-# $(DOCKER_SWSS_LAYER_BOOKWORM)_DEPENDS += $(SWSS)
-# $(DOCKER_SWSS_LAYER_BOOKWORM)_LOAD_DOCKERS += $(DOCKER_CONFIG_ENGINE_BOOKWORM)
-#
-# $(DOCKER_SWSS_LAYER_BOOKWORM)_DBG_DEPENDS = $($(DOCKER_CONFIG_ENGINE_BOOKWORM)_DBG_DEPENDS) \
-#                                              $(SWSS_DBG)
-# $(DOCKER_SWSS_LAYER_BOOKWORM)_DBG_IMAGE_PACKAGES = $($(DOCKER_CONFIG_ENGINE_BOOKWORM)_DBG_IMAGE_PACKAGES)
-#
-# SONIC_DOCKER_IMAGES += $(DOCKER_SWSS_LAYER_BOOKWORM)
-# SONIC_BOOKWORM_DOCKERS += $(DOCKER_SWSS_LAYER_BOOKWORM)
-
-# ###
-# # rules/swss.mk
-# ###
-# # swss package
-#
-# SWSS = swss_1.0.0_$(CONFIGURED_ARCH).deb
-# $(SWSS)_RDEPENDS += $(LIBSAIREDIS) $(LIBSAIMETADATA) $(LIBTEAM) \
-#     $(LIBTEAMDCTL) $(LIBSWSSCOMMON) $(PYTHON3_SWSSCOMMON) \
-#     $(PROTOBUF) $(PROTOBUF_LITE) $(PYTHON3_PROTOBUF) $(LIB_SONIC_DASH_API)
-#
-# TODO BL: Debugging
-# SWSS_DBG = swss-dbg_1.0.0_$(CONFIGURED_ARCH).deb
-# $(SWSS_DBG)_DEPENDS += $(SWSS)
-# $(SWSS_DBG)_RDEPENDS += $(SWSS)
-# $(eval $(call add_derived_package,$(SWSS),$(SWSS_DBG)))
-#
-# # The .c, .cpp, .h & .hpp files under src/{$DBG_SRC_ARCHIVE list}
-# # are archived into debug one image to facilitate debugging.
-# #
-# DBG_SRC_ARCHIVE += sonic-swss
-
