@@ -1,0 +1,309 @@
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load")
+load("@rules_deb//distroless:defs.bzl", "flatten", "group", "passwd")
+load("@tar.bzl", "tar", "mutate")
+load("//dockers/docker-base-bookworm:site_packages.bzl", "site_packages")
+load("@bazel_lib//lib:run_binary.bzl", "run_binary")
+
+
+flatten(
+  name = "apt_deps",
+  tars = [
+       "@bookworm//ifupdown-ng",
+       "@bookworm//arping",
+       "@bookworm//iproute2",
+       "@bookworm//ndisc6",
+       "@bookworm//tcpdump",
+       "@bookworm//bridge-utils",
+       "@bookworm//conntrack",
+       "@bookworm//ndppd",
+       "@bookworm//python3-protobuf",
+       "@bookworm//pciutils",
+       "@bookworm//python3-netifaces",
+  ],
+  deduplicate = True,
+)
+
+site_packages(
+    name = "site-packages",
+    srcs = [
+        "@pip//scapy",
+    ],
+    mutate = mutate(
+        strip_prefix = "install",
+        package_dir = "./usr",
+        # TODO BL: This seems to be the script that every site packae needs
+        #          so we'll have to generalize it.
+        awk_script = "//dockers/docker-base-bookworm:mutate.awk",
+    )
+)
+
+# TODO BL: Unported, we don't support arm64 yet
+#
+# {% if ( CONFIGURED_ARCH == "armhf" or CONFIGURED_ARCH == "arm64" ) %}
+# # Fix for gcc/python/iputils-ping not found in arm docker
+# RUN apt-get install -y   \
+#         gcc              \
+#         iputils-ping
+# {% endif %}
+#
+# # Dependencies of restore_neighbors.py
+# RUN pip3 install pyroute2==0.5.14
+#
+# {% if ( CONFIGURED_ARCH == "armhf" or CONFIGURED_ARCH == "arm64" ) %}
+# # Remove installed gcc
+# RUN apt-get remove -y gcc
+# {% endif %}
+
+# Debs and python wheels
+filegroup(
+  name = "docker_orchagent_depends",
+  srcs = [
+    "//dockers/docker-swss-layer-bookworm:swss_runtime",
+    # TODO BL: I don't think we need LIB_SONIC_DASH_API because it's included in the swss runtime
+# $(DOCKER_ORCHAGENT)_PYTHON_WHEELS += $(SCAPY)
+  ],
+
+)
+
+
+
+# # TODO BL: enable asan when we figure out what dbg is going to look like
+# ifeq ($(ENABLE_ASAN), y)
+# $(DOCKER_ORCHAGENT)_DEPENDS += $(SWSS_DBG)
+# endif
+
+# # Clean up
+# RUN apt-get purge -y build-essential python3-dev
+
+tar(
+  name = "source_files",
+  srcs = [
+    "arp_update.conf",
+    "ndppd.conf",
+    "tunnel_packet_handler.conf",
+    "enable_counters.py",
+    "tunnel_packet_handler.py",
+    "orchagent.sh",
+    "swssconfig.sh",
+    "buffermgrd.sh",
+    "//files:scripts/arp_update",
+    "//files:build_templates/arp_update_vars.j2",
+  ],
+  mtree = [
+    "./usr/share/sonic/templates/arp_update.conf type=file content=$(location :arp_update.conf)",
+    "./usr/share/sonic/templates/ndppd.conf type=file content=$(location :ndppd.conf)",
+    "./usr/share/sonic/templates/tunnel_packet_handler.conf type=file content=$(location :tunnel_packet_handler.conf)",
+    "./usr/bin/enable_counters.py type=file content=$(location :enable_counters.py)",
+    "./usr/bin/tunnel_packet_handler.py type=file content=$(location :tunnel_packet_handler.py)",
+    "./usr/bin/orchagent.sh type=file content=$(location :orchagent.sh)",
+    "./usr/bin/swssconfig.sh type=file content=$(location :swssconfig.sh)",
+    "./usr/bin/buffermgrd.sh type=file content=$(location :buffermgrd.sh)",
+    "./usr/bin/arp_update type=file content=$(location //files:scripts/arp_update)",
+    "./usr/share/sonic/templates/arp_update_vars.j2 type=file content=$(location //files:build_templates/arp_update_vars.j2)",
+  ],
+)
+
+tar(
+  name = "jinja_templates",
+  srcs = glob(
+    ["*.j2"],
+    exclude = ["docker-init.j2"],
+  ),
+  mutate = mutate(
+      strip_prefix = package_name(),
+      package_dir = "/usr/share/sonic/templates",
+  )
+)
+
+# TODO BL: havnen't done this
+# TODO BL: It's possible that we need to run this inside the container, because it'll have some packages installed.
+#          we'll see.
+
+run_binary(
+  name = "run_cfggen",
+  tool = "@sonic_config_engine//:sonic-cfggen-bin",
+  srcs = [":docker-init.j2"],
+  outs = ["docker-init.sh"],
+  args = [
+    "-a",
+    "{\"ENABLE_ASAN\":\"{{ENABLE_ASAN}}\"}",
+    "-t",
+    "/usr/share/sonic/templates/docker-init.j2",
+    ">",
+    "$(location docker-init.sh)",
+  ],
+  env = {
+    "ENABLE_ASAN": "TODO BL:",
+  },
+)
+
+# RUN rm -f /usr/share/sonic/templates/docker-init.j2
+# RUN chmod 755 /usr/bin/docker-init.sh
+
+oci_image(
+    name = "docker-orchagent",
+    base = "//dockers/docker-swss-layer-bookworm",
+    tars = [
+        ":apt_deps",
+        ":site-packages",
+        ":docker_orchagent_depends",
+        ":source_files",
+        ":jinja_templates",
+    ],
+    env = {
+        "DEBIAN_FRONTEND": "noninteractive"
+    },
+    entrypoint = ["/usr/bin/docker-init.sh"],
+    visibility = ["//visibility:public"]
+)
+
+# $(DOCKER_ORCHAGENT)_RUN_OPT += -t --cap-add=NET_ADMIN --security-opt apparmor=unconfined --security-opt="systempaths=unconfined"
+# $(DOCKER_ORCHAGENT)_RUN_OPT += -v /etc/network/interfaces:/etc/network/interfaces:ro
+# $(DOCKER_ORCHAGENT)_RUN_OPT += -v /etc/localtime:/etc/localtime:ro 
+# $(DOCKER_ORCHAGENT)_RUN_OPT += -v /etc/network/interfaces.d/:/etc/network/interfaces.d/:ro
+# $(DOCKER_ORCHAGENT)_RUN_OPT += -v /host/machine.conf:/host/machine.conf:ro
+# $(DOCKER_ORCHAGENT)_RUN_OPT += -v /etc/sonic:/etc/sonic:ro
+# $(DOCKER_ORCHAGENT)_RUN_OPT += -v /var/log/swss:/var/log/swss:rw
+#
+# $(DOCKER_ORCHAGENT)_BASE_IMAGE_FILES += swssloglevel:/usr/bin/swssloglevel
+# $(DOCKER_ORCHAGENT)_FILES += $(ARP_UPDATE_SCRIPT) $(ARP_UPDATE_VARS_TEMPLATE)
+
+oci_load(
+    name = "load",
+    image = ":docker-orchagent",
+    repo_tags = ["docker-orchagent:latest"]
+)
+
+# TODO BL: we're ignoring this for now, I don't know what to do with it
+# RUN --mount=type=bind,from=base,target=/changes-to-image rsync -axAX --no-D --exclude=/sys --exclude=/proc --exclude=/dev --exclude=resolv.conf /changes-to-image/ /
+
+
+# TODO BL: from base-bookworm
+# passwd(
+#     name = "passwd",
+#     entries = [
+#         {
+#             "uid": 0,
+#             "gid": 0,
+#             "home": "/root",
+#             "shell": "/bin/bash",
+#             "username": "root",
+#         }
+#     ],
+# )
+#
+# group(
+#     name = "group",
+#     entries = [
+#         {
+#             "name": "root",
+#             "gid": 0,
+#         },
+#         {
+#             "name": "adm",
+#             "gid": 4,
+#         },
+#     ],
+# )
+
+# tar(
+#     name = "rootfs",
+#     srcs = glob(["etc/**/*", "root/*"]),
+#     mutate = mutate(strip_prefix = package_name())
+# )
+#
+#
+# tar(
+#     name = "rootdirslinks",
+#     mtree = [
+#         "./bin/sh type=link link=/bin/bash",
+#         "./var/log/supervisor type=dir",
+#         "./etc/supervisor/conf.d type=dir",
+#         "./usr/bin/vim.tiny type=link link=/usr/bin/vim"
+#     ]
+# )
+#
+#
+# flatten(
+#     name = "flat",
+#     tars = [
+#         "@bookworm//base-files",
+#         "@bookworm//ca-certificates",
+#         "@bookworm//libc6",
+#         "@bookworm//libc-bin",
+#         "@bookworm//libssl3",
+#         "@bookworm//netbase",
+#         "@bookworm//openssl",
+#         "@bookworm//tzdata",
+#         "@bookworm//media-types",
+#         "@bookworm//gcc-12-base",
+#         "@bookworm//libgcc-s1",
+#         "@bookworm//libgomp1",
+#         "@bookworm//libgmpxx4ldbl",
+#         "@bookworm//libstdc++6",
+#         "@bookworm//binutils",
+#         "@bookworm//krb5-multidev",
+#         ":passwd",
+#         ":group",
+#         "@bookworm//bash",
+#         "@bookworm//coreutils",
+#         "@bookworm//curl",
+#         "@bookworm//less",
+#         "@bookworm//perl",
+#         "@bookworm//procps",
+#         "@bookworm//python3",
+#         "@bookworm//python-is-python3",
+#         "@bookworm//python3-dev",
+#         "@bookworm//vim-tiny",
+#         "@bookworm//rsyslog",
+#         "@bookworm//redis-tools",
+#         "@bookworm//libdaemon0",
+#         "@bookworm//libdbus-1-3",
+#         "@bookworm//libjansson4",
+#         "@bookworm//iproute2",
+#         "@bookworm//net-tools",
+#         "@bookworm//jq",
+#         "@bookworm//libzmq5",
+#         "@bookworm//libwrap0",
+#         "@bookworm//libatomic1",
+#         "@bookworm//libgmp10",
+#
+#
+#         # Transitives
+#         "@bookworm//libhiredis-dev",
+#         "@bookworm//libnl-3-dev",
+#         "@bookworm//libnl-genl-3-dev",
+#         "@bookworm//libnl-route-3-dev",
+#         "@bookworm//libnl-nf-3-dev",
+#         "@bookworm//libboost-dev",
+#         "@bookworm//libboost-serialization-dev",
+#         "@bookworm//uuid-dev",
+#         "@bookworm//libzmq3-dev",
+#         "@bookworm//libpcre2-8-0",
+#         "@bookworm//libyang2-dev",
+#     ],
+#     deduplicate = True
+# )
+# oci_image(
+#     name = "docker-base-bookworm",
+#     tars = [
+#         ":rootfs",
+#         ":rootdirslinks",
+#         ":flat",
+#         ":site-packages",
+#         "@sonic_supervisord_utilities//:dist",
+#     ],
+#     env = {
+#         "DEBIAN_FRONTEND": "noninteractive"
+#     },
+#     entrypoint = ["/usr/bin/supervisord"],
+#     architecture = "amd64",
+#     os = "linux",
+#     visibility = ["//visibility:public"]
+# )
+#
+# oci_load(
+#     name = "load",
+#     image = "docker-base-bookworm",
+#     repo_tags = ["docker-base-bookworm:latest"]
+# )
