@@ -1,0 +1,4 @@
+
+# TODO BL: Remove, this is jsut for testing
+common --registry=https://raw.githubusercontent.com/aspect-build/bazel-central-registry/aspect_rules_py-v1.7.1
+common --registry=https://bcr.bazel.build

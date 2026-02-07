@@ -34,7 +34,7 @@ py_library(
         # "@sonic_config_engine_pip//pyyaml",
 
         # TODO BL: Need it to run `sonic-cfggen-bin`
-        "@libyang3_py3//:libyang3_py3",
+        "@sonic_config_engine_pip//libyang",
     ],
 )
 
