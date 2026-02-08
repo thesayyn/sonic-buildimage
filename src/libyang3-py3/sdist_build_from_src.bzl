@@ -185,6 +185,8 @@ EOF
         outputs = [install_dir],
     )
 
+    repo_name = ctx.label.repo_name
+
     return [
         DefaultInfo(
             files = depset([install_dir]),
@@ -193,7 +195,8 @@ EOF
         PyInfo(
             transitive_sources = depset([install_dir]),
             imports = depset([
-                ctx.label.package + "/install/lib/python{}.{}/site-packages".format(
+                ctx.label.package + "{}/install/lib/python{}.{}/site-packages".format(
+                    repo_name,
                     py_toolchain.interpreter_version_info.major,
                     py_toolchain.interpreter_version_info.minor,
                 ),
