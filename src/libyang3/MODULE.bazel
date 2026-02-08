@@ -15,7 +15,9 @@ apt.install(
     dependency_set = "libyang3_deps",
     # target_release = "bookworm",
     suites = ["bookworm"],
-    packages = ["libpcre2-dev"],
+    packages = [
+      "libpcre2-dev",
+    ],
 )
 use_repo(apt, "libyang3_deps")
 

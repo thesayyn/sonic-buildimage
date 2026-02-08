@@ -183,3 +183,6 @@ local_path_override(
     module_name = "sonic-dash-api",
     path = "../../sonic-net/sonic-dash-api",
 )
+
+# TODO BL: delete ,this is just to be able to bazel query this repo
+bazel_dep(name = "patchelf", version = "0.18.0.bcr.1")

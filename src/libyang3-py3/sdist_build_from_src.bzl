@@ -66,12 +66,16 @@ def _sdist_build_from_src(ctx):
 
     # Also collect DefaultInfo files (includes shared libraries)
     for f in dep[DefaultInfo].files.to_list():
+        print("BL: sdist_build_from_src::dep::so={}".format(f.path))
         cc_files.append(f)
         if "/usr/lib/" in f.path and f.path.endswith(".so") and not library_path:
             idx = f.path.find("/usr/lib")
             library_path = f.dirname
         elif f.path.endswith(".a") and not library_path:
             library_path = f.dirname
+
+    
+    print("BL: sdist_build_from_src::library_path={}".format(library_path))
 
     # Join include paths with colons for multiple paths
     # Prefix each path with $EXECROOT since we'll be in a different directory
@@ -95,17 +99,26 @@ def _sdist_build_from_src(ctx):
         library_path_full = library_path
 
     # Get shared library path if available
+    shared_lib = None
     shared_lib_dir = ""
     shared_lib_file = ""
     for f in dep[DefaultInfo].files.to_list():
         if f.path.endswith(".so"):
+            shared_lib = f
             shared_lib_dir = f.dirname
             shared_lib_file = f.path
             break
 
+    print("BL: sdist_build_from_src::shared_lib={}".format(shared_lib))
+    print("BL: sdist_build_from_src::shared_lib::dir={}".format(shared_lib_dir))
+    print("BL: sdist_build_from_src::shared_lib::file={}".format(shared_lib_file))
+
     # Use run_shell to build the wheel from extracted source
     # Save PWD before cd since paths are relative to execroot
     command = """
+# TODO BL: Remove
+# set -x
+
 set -e
 EXECROOT="$PWD"
 export LIBYANG_HEADERS="{headers}"
@@ -122,12 +135,18 @@ if [ -n "{shared_lib_dir}" ]; then
     export LIBYANG_LIBRARIES="$EXECROOT/{shared_lib_dir}"
 fi
 
+echo "BL: This is libyangs ldd" >/dev/stderr
+ldd "$EXECROOT/{shared_lib_file}" >/dev/stderr
+
 # Create output directory
 mkdir -p "$EXECROOT/{outdir}"
 
 # Build the wheel (--no-isolation since venv already has deps)
 cd "$EXECROOT/{srcdir}"
 "$EXECROOT/{python}" -m build --wheel --no-isolation --outdir "$EXECROOT/{outdir}"
+
+# TOD BL: Remove
+find "$EXECROOT/{outdir}" >&2
 """.format(
         headers = include_path,
         libraries = library_path_full,
@@ -158,11 +177,15 @@ cd "$EXECROOT/{srcdir}"
     unpack = ctx.attr._unpack[platform_common.ToolchainInfo].bin.bin
 
     install_command = """
+# TODO BL: Remove
+set -x
+
 WHEEL=$(ls "{wheel_dir}"/*.whl 2>/dev/null | head -1)
 if [ -z "$WHEEL" ]; then
     echo "No wheel found in {wheel_dir}" >&2
     exit 1
 fi
+
 "{unpack}" --into "{install_dir}" --wheel "$WHEEL" --python-version-major {py_major} --python-version-minor {py_minor}
 
 # Create yang.py compatibility shim (sonic_yang expects 'yang' module, libyang 3.x provides 'libyang')
@@ -171,17 +194,32 @@ cat > "{install_dir}/lib/python{py_major}.{py_minor}/site-packages/yang.py" << '
 # sonic_yang.py expects to import 'yang' but libyang 3.x provides 'libyang'
 from libyang import *
 EOF
+
+# TODO BL: This is to to materialize the libyang.so that we have built from source,
+# and add it to the rpat
+EXECROOT="$PWD"
+root="{install_dir}/lib/python{py_major}.{py_minor}/site-packages/"
+cp "$EXECROOT/{shared_library_file}" "${{root}}/libyang.so"
+{patchelf} --set-rpath '$ORIGIN' "${{root}}/_libyang.cpython-311-x86_64-linux-gnu.so"
 """.format(
         wheel_dir = wheel_dir.path,
         unpack = unpack.path,
         install_dir = install_dir.path,
         py_major = py_toolchain.interpreter_version_info.major,
         py_minor = py_toolchain.interpreter_version_info.minor,
+        shared_library_file = shared_lib_file,
+        shared_lib_dir = shared_lib_dir,
+        patchelf = ctx.executable._patchelf.path,
     )
 
     ctx.actions.run_shell(
         command = install_command,
-        inputs = [wheel_dir, unpack],
+        inputs = [
+          wheel_dir,
+          unpack,
+          shared_lib, 
+          ctx.executable._patchelf,
+        ],
         outputs = [install_dir],
     )
 
@@ -225,6 +263,11 @@ instead of a tarball. Useful when source is fetched via http_archive with patche
         "_unpack": attr.label(
             default = "@aspect_rules_py//py/private/toolchain:resolved_unpack_toolchain",
             cfg = "exec",
+        ),
+        "_patchelf": attr.label(
+            default = "@patchelf//:patchelf",
+            cfg = "exec",
+            executable = True,
         ),
     },
     toolchains = [

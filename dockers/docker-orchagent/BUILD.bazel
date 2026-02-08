@@ -126,15 +126,13 @@ run_binary(
   outs = ["docker-init.sh"],
   args = [
     "-a",
+    # TODO BL: Enable asan
     "{\"ENABLE_ASAN\":\"{{ENABLE_ASAN}}\"}",
     "-t",
     "/usr/share/sonic/templates/docker-init.j2",
     ">",
     "$(location docker-init.sh)",
   ],
-  env = {
-    "ENABLE_ASAN": "TODO BL:",
-  },
 )
 
 # RUN rm -f /usr/share/sonic/templates/docker-init.j2

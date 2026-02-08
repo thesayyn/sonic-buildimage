@@ -12,12 +12,8 @@ dependencies = [
     "pytest>=7.0",
     "redis>=4.0",
 
-    # TODO BL: to run the cfggen binary.
-    #          will be overriden in MODULE.bazel
-    "libyang",
+    # TODO BL: for libyang, which should probably bring their own deps
     "cffi",
-    "build",
-    "setuptools",
 ]
 
 # Note: sonic-py-common, sonic-yang-mgmt, sonic-yang-models, swsscommon, swsssdk
