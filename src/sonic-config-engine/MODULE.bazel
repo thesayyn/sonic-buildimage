@@ -10,6 +10,7 @@ bazel_dep(name = "sonic-py-swsssdk", version = "0.0.0", repo_name = "sonic_py_sw
 # TODO BL: we need libyang to run cfggen as part of the build,
 #          and we need it to be in the pip packages.
 bazel_dep(name = "libyang3_py3", version = "3.1.0")
+bazel_dep(name = "sonic-yang-mgmt", version = "0.0.0", repo_name = "sonic_yang_mgmt")
 
 python = use_extension("@rules_python//python/extensions:python.bzl", "python")
 python.toolchain(python_version = "3.11.6")
@@ -18,17 +19,17 @@ uv = use_extension("@aspect_rules_py//uv/unstable:extension.bzl", "uv")
 uv.declare_hub(hub_name = "sonic_config_engine_pip")
 uv.declare_venv(
     hub_name = "sonic_config_engine_pip",
-    venv_name = "sonic_config_engine_venv",
+    venv_name = "default",
 )
 uv.override_requirement(
     hub_name = "sonic_config_engine_pip",
     requirement = "libyang",
     target = "@libyang3_py3//:libyang3_py3",
-    venv_name = "sonic_config_engine_venv",
+    venv_name = "default",
 )
 uv.lockfile(
     hub_name = "sonic_config_engine_pip",
-    venv_name = "sonic_config_engine_venv",
+    venv_name = "default",
     src = "//:uv.lock",
 )
 use_repo(uv, "sonic_config_engine_pip")
