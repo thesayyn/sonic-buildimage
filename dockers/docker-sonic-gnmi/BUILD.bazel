@@ -1,0 +1,118 @@
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load")
+load("@tar.bzl", "tar")
+
+# Package the shell scripts and config files
+tar(
+    name = "files",
+    srcs = [
+        "start.sh",
+        "gnmi-native.sh",
+        "dialout.sh",
+        "supervisord.conf",
+        "critical_processes",
+        "telemetry_vars.j2",
+    ],
+    mtree = [
+        "./usr/bin/start.sh type=file mode=0755 contents=$(location :start.sh)",
+        "./usr/bin/gnmi-native.sh type=file mode=0755 contents=$(location :gnmi-native.sh)",
+        "./usr/bin/dialout.sh type=file mode=0755 contents=$(location :dialout.sh)",
+        "./etc/supervisor/conf.d/supervisord.conf type=file contents=$(location :supervisord.conf)",
+        "./etc/supervisor/critical_processes type=file contents=$(location :critical_processes)",
+        "./usr/share/sonic/templates/telemetry_vars.j2 type=file contents=$(location :telemetry_vars.j2)",
+    ],
+)
+
+# Package the GNMI binaries from the gnmi module
+tar(
+    name = "gnmi_binaries",
+    srcs = [
+        "@gnmi//telemetry:telemetry",
+        "@gnmi//gnmi_dump:gnmi_dump",
+        "@gnmi//gnoi_client:gnoi_client",
+        "@gnmi//dialout/dialout_client_cli:dialout_client_cli",
+    ],
+    mtree = [
+        "./usr/sbin/telemetry type=file mode=0755 contents=$(location @gnmi//telemetry:telemetry)",
+        "./usr/sbin/gnmi_dump type=file mode=0755 contents=$(location @gnmi//gnmi_dump:gnmi_dump)",
+        "./usr/sbin/gnoi_client type=file mode=0755 contents=$(location @gnmi//gnoi_client:gnoi_client)",
+        "./usr/sbin/dialout_client_cli type=file mode=0755 contents=$(location @gnmi//dialout/dialout_client_cli:dialout_client_cli)",
+    ],
+)
+
+# Package the swsscommon consolidated shared library
+tar(
+    name = "swsscommon_libs",
+    srcs = ["@sonic_swss_common//:libswsscommon_consolidated.so"],
+    mtree = [
+        "./usr/lib/libswsscommon_consolidated.so type=file mode=0755 contents=$(location @sonic_swss_common//:libswsscommon_consolidated.so)",
+    ],
+)
+
+# Package libyang 1.x runtime libraries using genrule for proper path handling
+genrule(
+    name = "libyang_libs",
+    srcs = [
+        "@gnmi//:libyang_shared_libs",
+        "@gnmi//:libyang_extension_plugins",
+        "@gnmi//:libyang_user_type_plugins",
+    ],
+    outs = ["libyang_libs.tar"],
+    cmd = """
+        mkdir -p tmp/usr/lib/x86_64-linux-gnu/libyang/extensions
+        mkdir -p tmp/usr/lib/x86_64-linux-gnu/libyang/user_types
+        for f in $(locations @gnmi//:libyang_shared_libs); do
+            cp $$f tmp/usr/lib/x86_64-linux-gnu/
+        done
+        for f in $(locations @gnmi//:libyang_extension_plugins); do
+            cp $$f tmp/usr/lib/x86_64-linux-gnu/libyang/extensions/
+        done
+        for f in $(locations @gnmi//:libyang_user_type_plugins); do
+            cp $$f tmp/usr/lib/x86_64-linux-gnu/libyang/user_types/
+        done
+        tar -C tmp -cf $@ .
+        rm -rf tmp
+    """,
+)
+
+# Package libusb runtime library and its dependencies (libudev) from apt
+genrule(
+    name = "libusb_libs",
+    srcs = [
+        "@bookworm//libusb-1.0-0:data",
+        "@bookworm//libudev1:data",
+        "@bookworm//libpcre3:data",
+    ],
+    outs = ["libusb_libs.tar"],
+    cmd = """
+        mkdir -p tmp
+        for src in $(SRCS); do
+            tar -xzf $$src -C tmp 2>/dev/null || true
+        done
+        tar -C tmp -cf $@ .
+        rm -rf tmp
+    """,
+)
+
+oci_image(
+    name = "docker-sonic-gnmi",
+    base = "//dockers/docker-base-bookworm",
+    tars = [
+        ":files",
+        ":gnmi_binaries",
+        ":swsscommon_libs",
+        ":libyang_libs",
+        ":libusb_libs",
+        # TODO: Add swsscommon Python bindings when available
+        # "@sonic_swss_common//pyext:swsscommon_dist",
+    ],
+    env = {
+        "DEBIAN_FRONTEND": "noninteractive",
+    },
+    entrypoint = ["/usr/bin/supervisord"],
+)
+
+oci_load(
+    name = "load",
+    image = ":docker-sonic-gnmi",
+    repo_tags = ["docker-sonic-gnmi:latest"],
+)
