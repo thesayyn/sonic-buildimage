@@ -66,7 +66,6 @@ def _sdist_build_from_src(ctx):
 
     # Also collect DefaultInfo files (includes shared libraries)
     for f in dep[DefaultInfo].files.to_list():
-        print("BL: sdist_build_from_src::dep::so={}".format(f.path))
         cc_files.append(f)
         if "/usr/lib/" in f.path and f.path.endswith(".so") and not library_path:
             idx = f.path.find("/usr/lib")
@@ -74,8 +73,6 @@ def _sdist_build_from_src(ctx):
         elif f.path.endswith(".a") and not library_path:
             library_path = f.dirname
 
-    
-    print("BL: sdist_build_from_src::library_path={}".format(library_path))
 
     # Join include paths with colons for multiple paths
     # Prefix each path with $EXECROOT since we'll be in a different directory
@@ -109,16 +106,9 @@ def _sdist_build_from_src(ctx):
             shared_lib_file = f.path
             break
 
-    print("BL: sdist_build_from_src::shared_lib={}".format(shared_lib))
-    print("BL: sdist_build_from_src::shared_lib::dir={}".format(shared_lib_dir))
-    print("BL: sdist_build_from_src::shared_lib::file={}".format(shared_lib_file))
-
     # Use run_shell to build the wheel from extracted source
     # Save PWD before cd since paths are relative to execroot
     command = """
-# TODO BL: Remove
-# set -x
-
 set -e
 EXECROOT="$PWD"
 export LIBYANG_HEADERS="{headers}"
@@ -135,18 +125,12 @@ if [ -n "{shared_lib_dir}" ]; then
     export LIBYANG_LIBRARIES="$EXECROOT/{shared_lib_dir}"
 fi
 
-echo "BL: This is libyangs ldd" >/dev/stderr
-ldd "$EXECROOT/{shared_lib_file}" >/dev/stderr
-
 # Create output directory
 mkdir -p "$EXECROOT/{outdir}"
 
 # Build the wheel (--no-isolation since venv already has deps)
 cd "$EXECROOT/{srcdir}"
 "$EXECROOT/{python}" -m build --wheel --no-isolation --outdir "$EXECROOT/{outdir}"
-
-# TOD BL: Remove
-find "$EXECROOT/{outdir}" >&2
 """.format(
         headers = include_path,
         libraries = library_path_full,
@@ -177,9 +161,6 @@ find "$EXECROOT/{outdir}" >&2
     unpack = ctx.attr._unpack[platform_common.ToolchainInfo].bin.bin
 
     install_command = """
-# TODO BL: Remove
-set -x
-
 WHEEL=$(ls "{wheel_dir}"/*.whl 2>/dev/null | head -1)
 if [ -z "$WHEEL" ]; then
     echo "No wheel found in {wheel_dir}" >&2
@@ -195,12 +176,14 @@ cat > "{install_dir}/lib/python{py_major}.{py_minor}/site-packages/yang.py" << '
 from libyang import *
 EOF
 
-# TODO BL: This is to to materialize the libyang.so that we have built from source,
-# and add it to the rpat
+# Materialize the libyang.so that we have built from source, and add it to the rpath.
+# TODO: There must be a better way to do this.
 EXECROOT="$PWD"
 root="{install_dir}/lib/python{py_major}.{py_minor}/site-packages/"
+wheel_so=$(find ${{root}} -name "*.so")
+
 cp "$EXECROOT/{shared_library_file}" "${{root}}/libyang.so"
-{patchelf} --set-rpath '$ORIGIN' "${{root}}/_libyang.cpython-311-x86_64-linux-gnu.so"
+{patchelf} --set-rpath '$ORIGIN' "${{wheel_so}}"
 """.format(
         wheel_dir = wheel_dir.path,
         unpack = unpack.path,

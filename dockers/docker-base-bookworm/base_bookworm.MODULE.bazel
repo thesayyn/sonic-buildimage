@@ -61,7 +61,6 @@ apt.install(
         "libpcre2-8-0",
         "libyang2-dev",
 
-        # TODO BL: this is for docker-swss-layer-bookworm
 
         # from rules/libteam.mk
         "libteam5",
@@ -71,7 +70,7 @@ apt.install(
         # from docker-orchagent/Dockerfile.j2
         "ifupdown",
         "arping",
-        # "iproute2", # TODO BL: Already here
+        # "iproute2", # Already here
         "ndisc6",
         "tcpdump",
         "bridge-utils",

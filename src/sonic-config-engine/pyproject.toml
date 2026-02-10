@@ -12,7 +12,7 @@ dependencies = [
     "pytest>=7.0",
     "redis>=4.0",
 
-    # TODO BL: for libyang, which should probably bring their own deps
+    # for libyang
     "cffi",
 ]
 

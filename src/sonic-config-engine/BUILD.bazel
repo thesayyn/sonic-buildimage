@@ -30,14 +30,10 @@ py_library(
         "@sonic_config_engine_pip//jinja2",
         "@sonic_config_engine_pip//lxml",
         "@sonic_config_engine_pip//netaddr",
-        # TODO BL: Removing because it conflicts with the one on the venv if I
-        #          try to bazel run @sonic_config_engine//:sonic-cfggen-bin
-        # "@sonic_config_engine_pip//pyyaml",
 
-        # TODO BL: Need it to run `sonic-cfggen-bin`
+        # Needed to run `sonic-cfggen-bin`
         "@libyang3_py3//:libyang3_py3",
         "@sonic_yang_mgmt//:sonic-yang-mgmt",
-        # TODO BL: Sohuld probably be improted transitively
         "@sonic_config_engine_pip//cffi",
     ],
 )

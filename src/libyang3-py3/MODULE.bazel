@@ -39,5 +39,4 @@ http_archive(
     patch_args = ["-p1", "-F3"],
 )
 
-# TODO BL: Patchelf to point the rpath of the shared library to the install dir.
 bazel_dep(name = "patchelf", version = "0.18.0.bcr.1")

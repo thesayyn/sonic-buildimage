@@ -152,8 +152,7 @@ local_path_override(
     path = "../sonic-platform-daemons",
 )
 
-# TODO BL: This is just for swss, we should formalize this into a registry
-#          so that we can resolve dependencies.
+# Needed for swss.
 
 bazel_dep(name = "rules_shell", version = "0.6.1")
 bazel_dep(name = "bazel_lib", version = "3.1.1")
@@ -182,4 +181,3 @@ local_path_override(
     path = "../sonic-dash-api",
 )
 
-bazel_dep(name = "patchelf", version = "0.18.0.bcr.1")

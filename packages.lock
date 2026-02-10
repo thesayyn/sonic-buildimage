@@ -6528,7 +6528,9 @@
 				"/bookworm/linux-libc-dev:amd64=6.1.148-1",
 				"/bookworm/libc-dev-bin:amd64=2.36-9+deb12u13",
 				"/bookworm/libexpat1-dev:amd64=2.5.0-1+deb12u2",
-				"/bookworm/libpython3-dev:amd64=3.11.2-1+b1"
+				"/bookworm/libpython3-dev:amd64=3.11.2-1+b1",
+				"/bookworm-security/liblzma5:amd64=5.4.1-1",
+				"/bookworm-security/linux-libc-dev:amd64=6.1.153-1"
 			],
 			"filename": "pool/main/p/python3-defaults/python3-dev_3.11.2-1+b1_amd64.deb",
 			"name": "python3-dev",
