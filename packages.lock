@@ -7229,8 +7229,7 @@
 				"/bookworm/libcrypt-dev:amd64=1:4.4.33-2",
 				"/bookworm/libcrypt1:amd64=1:4.4.33-2",
 				"/bookworm-security/linux-libc-dev:amd64=6.1.153-1",
-				"/bookworm/libc-dev-bin:amd64=2.36-9+deb12u13",
-				"/bookworm/linux-libc-dev:amd64=6.1.148-1"
+				"/bookworm/libc-dev-bin:amd64=2.36-9+deb12u13"
 			],
 			"filename": "pool/main/u/util-linux/uuid-dev_2.38.1-5+deb12u3_amd64.deb",
 			"name": "uuid-dev",
