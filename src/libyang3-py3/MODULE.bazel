@@ -38,3 +38,5 @@ http_archive(
     ],
     patch_args = ["-p1", "-F3"],
 )
+
+bazel_dep(name = "patchelf", version = "0.18.0.bcr.1")

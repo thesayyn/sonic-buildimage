@@ -1,5 +1,6 @@
 load("@aspect_rules_py//py:defs.bzl", "py_library", "py_binary", "py_pytest_main", "py_test")
 load("@tar.bzl//:tar.bzl", "tar", "mutate")
+load("@bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
 
 exports_files(["sonic-cfggen"])
 
@@ -29,7 +30,11 @@ py_library(
         "@sonic_config_engine_pip//jinja2",
         "@sonic_config_engine_pip//lxml",
         "@sonic_config_engine_pip//netaddr",
-        "@sonic_config_engine_pip//pyyaml",
+
+        # Needed to run `sonic-cfggen-bin`
+        "@libyang3_py3//:libyang3_py3",
+        "@sonic_yang_mgmt//:sonic-yang-mgmt",
+        "@sonic_config_engine_pip//cffi",
     ],
 )
 
@@ -47,7 +52,9 @@ py_binary(
     srcs = [":gen-sonic-cfggen-py"],
     main = "sonic_cfggen_script.py",
     visibility = ["//visibility:public"],
-    deps = [":sonic-config-engine"],
+    deps = [
+      ":sonic-config-engine",
+    ],
 )
 
 # Test utilities library

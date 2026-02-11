@@ -1,0 +1,58 @@
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load")
+load("@tar.bzl", "tar")
+load("@rules_deb//distroless:defs.bzl", "flatten")
+
+# TODO BL: These I haven't found yet
+# $(SWSS)_RDEPENDS += $(PROTOBUF) $(PROTOBUF_LITE) $(PYTHON3_PROTOBUF) 
+filegroup(
+  name = "rdeps",
+  srcs = [
+        "@sonic_sairedis//meta:libsaimetadata_dev_pkg",
+        "@sonic_sairedis//lib:libsairedis_dev_pkg",
+        # TODO: Port libswsscommon if swsscommon_dist is not enough
+        # # $(LIBSWSSCOMMON) 
+        # "@sonic_swss_common//:libswsscommon",
+        "@sonic_dash_api//:libdashapi_dev_pkg",
+        "@sonic_swss_common//pyext:swsscommon_dist",
+        "@bookworm//libteam5:data",
+        "@bookworm//libteamdctl0:data",
+  ],
+)
+
+flatten(
+  name = "swss_runtime",
+  tars = [
+     "@sonic_swss//:debian-data",
+     ":rdeps",
+  ],
+  visibility = [
+    "//dockers/docker-swss-layer-bookworm:__subpackages__",
+    "//dockers/docker-orchagent:__subpackages__",
+  ],
+)
+
+
+# TODO: We may need to port this:
+#       RUN apt-get install iputils-ping
+oci_image(
+    name = "docker-swss-layer-bookworm",
+    base = "//dockers/docker-config-engine-bookworm",
+    tars = [
+      ":swss_runtime",
+    ],
+    env = {
+        "DEBIAN_FRONTEND": "noninteractive"
+    },
+    entrypoint = ["/usr/bin/supervisord"],
+    visibility = [
+      "//dockers/docker-swss-layer-bookworm:__subpackages__",
+      "//dockers/docker-orchagent:__subpackages__",
+    ],
+)
+
+oci_load(
+    name = "load",
+    image = ":docker-swss-layer-bookworm",
+    repo_tags = ["docker-swss-layer-bookworm:latest"]
+)
+

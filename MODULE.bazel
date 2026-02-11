@@ -6,7 +6,7 @@ bazel_dep(name = "platforms", version = "1.0.0")
 bazel_dep(name = "bazel_skylib", version = "1.8.2")
 bazel_dep(name = "rules_python", version = "1.6.3")
 bazel_dep(name = "rules_oci", version = "2.2.6")
-bazel_dep(name = "tar.bzl", version = "0.5.5")
+bazel_dep(name = "tar.bzl", version = "0.8.1")
 
 bazel_dep(name = "rules_distroless", version = "0.0.0", repo_name = "rules_deb")
 local_path_override(
@@ -14,14 +14,7 @@ local_path_override(
     path = "../rules_distroless"
 )
 
-bazel_dep(name = "aspect_rules_py", version = "1.7.1")
-single_version_override(
-    module_name = "aspect_rules_py",
-    patch_strip = 1,
-    patches = [
-        "//patches:aspect_rules_py.patch",
-    ],
-)
+bazel_dep(name = "aspect_rules_py", version = "1.8.4")
 
 python = use_extension("@rules_python//python/extensions:python.bzl", "python")
 python.toolchain(python_version = "3.11.6")
@@ -158,3 +151,33 @@ local_path_override(
     module_name = "sonic-platform-daemons",
     path = "../sonic-platform-daemons",
 )
+
+# Needed for swss.
+
+bazel_dep(name = "rules_shell", version = "0.6.1")
+bazel_dep(name = "bazel_lib", version = "3.1.1")
+
+bazel_dep(name = "sonic-swss", version = "0.0.0", repo_name = "sonic_swss")
+local_path_override(
+    module_name = "sonic-swss",
+    path = "../sonic-swss"
+)
+
+bazel_dep(name = "sonic-sairedis", version = "0.0.0", repo_name = "sonic_sairedis")
+local_path_override(
+    module_name = "sonic-sairedis",
+    path = "../sonic-sairedis",
+)
+
+bazel_dep(name = "sai", version = "0.0.0")
+local_path_override(
+    module_name = "sai",
+    path = "../sonic-sairedis/SAI",
+)
+
+bazel_dep(name = "sonic-dash-api", version = "0.0.0", repo_name = "sonic_dash_api")
+local_path_override(
+    module_name = "sonic-dash-api",
+    path = "../sonic-dash-api",
+)
+

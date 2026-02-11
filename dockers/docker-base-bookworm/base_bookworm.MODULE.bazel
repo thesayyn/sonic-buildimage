@@ -16,7 +16,7 @@ apt.sources_list(
 
 apt.install(
     dependency_set = "bookworm",
-    target_release = "bookworm",
+    suites = ["bookworm", "bookworm-updates", "bookworm-security"],
     packages = [
         "base-files",
         "ca-certificates",
@@ -60,9 +60,31 @@ apt.install(
         "libgmpxx4ldbl",
         "libpcre2-8-0",
         "libyang2-dev",
-    ]
+
+
+        # from rules/libteam.mk
+        "libteam5",
+        "libteam-dev",
+        "libteamdctl0",
+
+        # from docker-orchagent/Dockerfile.j2
+        "ifupdown",
+        "arping",
+        # "iproute2", # Already here
+        "ndisc6",
+        "tcpdump",
+        "bridge-utils",
+        "conntrack",
+        "ndppd",
+        "python3-protobuf",
+        "pciutils",
+        "python3-netifaces",
+    ],
 )
 
+apt.lock(
+   into = "packages.lock",
+)
 use_repo(apt, "bookworm")
 
 

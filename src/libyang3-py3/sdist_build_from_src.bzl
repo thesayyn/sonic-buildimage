@@ -73,6 +73,7 @@ def _sdist_build_from_src(ctx):
         elif f.path.endswith(".a") and not library_path:
             library_path = f.dirname
 
+
     # Join include paths with colons for multiple paths
     # Prefix each path with $EXECROOT since we'll be in a different directory
     include_path = ":".join(["$EXECROOT/" + p if not p.startswith("/") else p for p in include_paths]) if include_paths else ""
@@ -95,10 +96,12 @@ def _sdist_build_from_src(ctx):
         library_path_full = library_path
 
     # Get shared library path if available
+    shared_lib = None
     shared_lib_dir = ""
     shared_lib_file = ""
     for f in dep[DefaultInfo].files.to_list():
         if f.path.endswith(".so"):
+            shared_lib = f
             shared_lib_dir = f.dirname
             shared_lib_file = f.path
             break
@@ -163,6 +166,7 @@ if [ -z "$WHEEL" ]; then
     echo "No wheel found in {wheel_dir}" >&2
     exit 1
 fi
+
 "{unpack}" --into "{install_dir}" --wheel "$WHEEL" --python-version-major {py_major} --python-version-minor {py_minor}
 
 # Create yang.py compatibility shim (sonic_yang expects 'yang' module, libyang 3.x provides 'libyang')
@@ -171,19 +175,38 @@ cat > "{install_dir}/lib/python{py_major}.{py_minor}/site-packages/yang.py" << '
 # sonic_yang.py expects to import 'yang' but libyang 3.x provides 'libyang'
 from libyang import *
 EOF
+
+# Materialize the libyang.so that we have built from source, and add it to the rpath.
+# TODO: There must be a better way to do this.
+EXECROOT="$PWD"
+root="{install_dir}/lib/python{py_major}.{py_minor}/site-packages/"
+wheel_so=$(find ${{root}} -name "*.so")
+
+cp "$EXECROOT/{shared_library_file}" "${{root}}/libyang.so"
+{patchelf} --set-rpath '$ORIGIN' "${{wheel_so}}"
 """.format(
         wheel_dir = wheel_dir.path,
         unpack = unpack.path,
         install_dir = install_dir.path,
         py_major = py_toolchain.interpreter_version_info.major,
         py_minor = py_toolchain.interpreter_version_info.minor,
+        shared_library_file = shared_lib_file,
+        shared_lib_dir = shared_lib_dir,
+        patchelf = ctx.executable._patchelf.path,
     )
 
     ctx.actions.run_shell(
         command = install_command,
-        inputs = [wheel_dir, unpack],
+        inputs = [
+          wheel_dir,
+          unpack,
+          shared_lib, 
+          ctx.executable._patchelf,
+        ],
         outputs = [install_dir],
     )
+
+    repo_name = ctx.label.repo_name
 
     return [
         DefaultInfo(
@@ -193,7 +216,8 @@ EOF
         PyInfo(
             transitive_sources = depset([install_dir]),
             imports = depset([
-                ctx.label.package + "/install/lib/python{}.{}/site-packages".format(
+                ctx.label.package + "{}/install/lib/python{}.{}/site-packages".format(
+                    repo_name,
                     py_toolchain.interpreter_version_info.major,
                     py_toolchain.interpreter_version_info.minor,
                 ),
@@ -222,6 +246,11 @@ instead of a tarball. Useful when source is fetched via http_archive with patche
         "_unpack": attr.label(
             default = "@aspect_rules_py//py/private/toolchain:resolved_unpack_toolchain",
             cfg = "exec",
+        ),
+        "_patchelf": attr.label(
+            default = "@patchelf//:patchelf",
+            cfg = "exec",
+            executable = True,
         ),
     },
     toolchains = [
