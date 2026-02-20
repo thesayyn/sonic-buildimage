@@ -52,15 +52,6 @@ site_packages(
 # RUN apt-get remove -y gcc
 # {% endif %}
 
-# Debs and python wheels
-filegroup(
-  name = "docker_orchagent_depends",
-  srcs = [
-    "//dockers/docker-swss-layer-bookworm:swss_runtime",
-  ],
-
-)
-
 # # TODO: enable asan when we figure out what dbg is going to look like
 # ifeq ($(ENABLE_ASAN), y)
 # $(DOCKER_ORCHAGENT)_DEPENDS += $(SWSS_DBG)
@@ -155,7 +146,6 @@ oci_image(
     tars = [
         ":apt_deps",
         ":site-packages",
-        ":docker_orchagent_depends",
         ":source_files",
         ":jinja_templates",
         ":docker_init",

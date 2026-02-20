@@ -4,6 +4,7 @@
 			"sets": {
 				"amd64": {
 					"/bookworm-security/less:amd64": "590-2.1~deb12u2",
+					"/bookworm-security/linux-libc-dev:amd64": "6.1.153-1",
 					"/bookworm-security/net-tools:amd64": "2.10-0.1+deb12u2",
 					"/bookworm-security/redis-tools:amd64": "5:7.0.15-1~deb12u5",
 					"/bookworm-updates/ca-certificates:all": "20230311+deb12u1",
@@ -61,7 +62,6 @@
 					"/bookworm/libz3-dev:amd64": "4.8.12-3.1",
 					"/bookworm/libzmq3-dev:amd64": "4.3.4-6",
 					"/bookworm/libzmq5:amd64": "4.3.4-6",
-					"/bookworm/linux-libc-dev:amd64": "6.1.148-1",
 					"/bookworm/media-types:all": "10.0.0",
 					"/bookworm/ndisc6:amd64": "1.0.5-1+b2",
 					"/bookworm/ndppd:amd64": "0.2.5-6",
@@ -7229,7 +7229,8 @@
 				"/bookworm/libcrypt-dev:amd64=1:4.4.33-2",
 				"/bookworm/libcrypt1:amd64=1:4.4.33-2",
 				"/bookworm-security/linux-libc-dev:amd64=6.1.153-1",
-				"/bookworm/libc-dev-bin:amd64=2.36-9+deb12u13"
+				"/bookworm/libc-dev-bin:amd64=2.36-9+deb12u13",
+				"/bookworm/linux-libc-dev:amd64=6.1.148-1"
 			],
 			"filename": "pool/main/u/util-linux/uuid-dev_2.38.1-5+deb12u3_amd64.deb",
 			"name": "uuid-dev",
