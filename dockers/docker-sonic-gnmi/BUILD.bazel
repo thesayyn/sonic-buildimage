@@ -69,26 +69,7 @@ genrule(
         for f in $(locations @gnmi//:libyang_user_type_plugins); do
             cp $$f tmp/usr/lib/x86_64-linux-gnu/libyang/user_types/
         done
-        tar -C tmp -cf $@ .
-        rm -rf tmp
-    """,
-)
-
-# Package libusb runtime library and its dependencies (libudev) from apt
-genrule(
-    name = "libusb_libs",
-    srcs = [
-        "@bookworm//libusb-1.0-0:data",
-        "@bookworm//libudev1:data",
-        "@bookworm//libpcre3:data",
-    ],
-    outs = ["libusb_libs.tar"],
-    cmd = """
-        mkdir -p tmp
-        for src in $(SRCS); do
-            tar -xzf $$src -C tmp 2>/dev/null || true
-        done
-        tar -C tmp -cf $@ .
+        tar --sort=name --mtime='1970-01-01' --owner=0 --group=0 -C tmp -cf $@ .
         rm -rf tmp
     """,
 )
@@ -101,8 +82,11 @@ oci_image(
         ":gnmi_binaries",
         ":swsscommon_libs",
         ":libyang_libs",
-        ":libusb_libs",
-        # TODO: Add swsscommon Python bindings when available
+        "@bookworm//libusb-1.0-0",
+        "@bookworm//libudev1",
+        "@bookworm//libpcre3",
+        # TODO(C2): swsscommon python bindings - SWIG can't find standard libs (swig.swg, python.swg).
+        # The pyext BUILD in sonic-swss-common needs SWIG include paths fixed first.
         # "@sonic_swss_common//pyext:swsscommon_dist",
     ],
     env = {
