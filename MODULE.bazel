@@ -129,6 +129,12 @@ local_path_override(
     path = "../sonic-pins",
 )
 
+bazel_dep(name = "sonic-gnmi", version = "0.0.0")
+local_path_override(
+    module_name = "sonic-gnmi",
+    path = "../sonic-gnmi",
+)
+
 bazel_dep(name = "sonic-build-infra", version = "0.0.0", repo_name = "sonic_build_infra")
 local_path_override(
     module_name = "sonic-build-infra",
@@ -136,6 +142,12 @@ local_path_override(
 )
 
 register_toolchains("@sonic_build_infra//toolchains/gcc:host_gcc_toolchain")
+
+bazel_dep(name = "libyang", version = "1.0.73")
+local_path_override(
+    module_name = "libyang",
+    path = "src/libyang",
+)
 
 bazel_dep(name = "libyang3", version = "3.12.2")
 local_path_override(
@@ -166,6 +178,13 @@ local_path_override(
     module_name = "sonic-platform-daemons",
     path = "../sonic-platform-daemons",
 )
+
+bazel_dep(name = "sonic-mgmt-common", version = "1.0.0")
+local_path_override(
+    module_name = "sonic-mgmt-common",
+    path = "../sonic-mgmt-common",
+)
+
 
 # Needed for swss.
 

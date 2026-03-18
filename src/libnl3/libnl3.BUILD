@@ -130,22 +130,31 @@ cc_library(
 )
 
 # Private headers used only during compilation of libnl3 libraries.
-# Includes netlink-private/, linux-private/, and the generated defs.h.
+# linux-private/ shadows system kernel headers (e.g. linux/snmp.h).
+# Must use strip_include_prefix (generates -I _virtual_includes/) so it has
+# higher priority than the toolchain's -isystem flags for linux-libc-dev.
+cc_library(
+    name = "linux_private_headers",
+    hdrs = glob(["include/linux-private/**/*.h"]),
+    strip_include_prefix = "include/linux-private",
+)
+
+# Includes netlink-private/ and the generated defs.h.
 cc_library(
     name = "private_headers",
     hdrs = glob([
         "include/netlink-private/**/*.h",
-        "include/linux-private/**/*.h",
     ]) + [":defs_h"],
     # include/netlink-private/netlink.h uses #include <defs.h>,
     # so we need lib/ in the include path (where defs.h is generated).
-    # Also include/linux-private/ provides <linux/...> headers.
     includes = [
         "include",
-        "include/linux-private",
         "lib",
     ],
-    deps = [":public_headers"],
+    deps = [
+        ":linux_private_headers",
+        ":public_headers",
+    ],
 )
 
 # =============================================================================
