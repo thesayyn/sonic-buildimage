@@ -7,6 +7,12 @@ bazel_dep(name = "bazel_skylib", version = "1.8.2")
 bazel_dep(name = "bazel_lib", version = "3.1.1")
 bazel_dep(name = "rules_cc", version = "0.2.14")
 bazel_dep(name = "tar.bzl", version = "0.8.1")
+# TODO(bazel-ready): Replace with tar 0.10.0 once it's released to the BCR.
+git_override(
+    module_name = "tar.bzl",
+    commit = "9b76e660363ab2465d89d3aadbbc1f7afa02e65c",
+    remote = "https://github.com/bazel-contrib/tar.bzl",
+)
 bazel_dep(name = "rules_distroless", version = "0.0.0", repo_name = "rules_deb")
 bazel_dep(name = "platforms", version = "1.0.0")
 local_path_override(
