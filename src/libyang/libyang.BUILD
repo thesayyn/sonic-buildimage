@@ -310,7 +310,7 @@ swig_gen(
 )
 
 # Compile SWIG-generated wrapper into a Python-loadable shared library
-# TODO BL: Revisit linkstatic before merging — currently dynamically linking
+# TODO(bazel-ready): Revisit linkstatic. Currently dynamically linking
 #   to match debian, but may want static linking for hermetic container images.
 cc_binary(
     name = "_yang_swig_lib",

@@ -74,4 +74,3 @@ libyang_src(
     ],
 )
 
-# TODO BL: Leave comment explaining that compiler attributes for common.h.in must be parameterized based on toolchain.
