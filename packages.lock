@@ -58,6 +58,7 @@
 					"/bookworm/libc6-dev:amd64": "2.36-9+deb12u13",
 					"/bookworm/libc6:amd64": "2.36-9+deb12u13",
 					"/bookworm/libcap2-bin:amd64": "1:2.66-4+deb12u2",
+					"/bookworm/libcrypt-dev:amd64": "1:4.4.33-2",
 					"/bookworm/libdaemon0:amd64": "0.14-7.1",
 					"/bookworm/libdbus-1-3:amd64": "1.14.10-1~deb12u1",
 					"/bookworm/libelf-dev:amd64": "0.188-2.1",
@@ -83,17 +84,26 @@
 					"/bookworm/libnl-3-dev:amd64": "3.7.0-0.2+b1",
 					"/bookworm/libnl-genl-3-dev:amd64": "3.7.0-0.2+b1",
 					"/bookworm/libnl-nf-3-dev:amd64": "3.7.0-0.2+b1",
+					"/bookworm/libpam0g-dev:amd64": "1.5.2-6+deb12u1",
+					"/bookworm/libpam0g:amd64": "1.5.2-6+deb12u1",
 					"/bookworm/libpcap-dev:amd64": "1.10.3-1",
 					"/bookworm/libpcap0.8:amd64": "1.10.3-1",
 					"/bookworm/libpcre2-8-0:amd64": "10.42-1",
+					"/bookworm/libpcre3-dev:amd64": "2:8.39-15",
+					"/bookworm/libpcre3:amd64": "2:8.39-15",
 					"/bookworm/libprotobuf-dev:amd64": "3.21.12-3",
 					"/bookworm/libprotobuf32:amd64": "3.21.12-3",
 					"/bookworm/libprotoc-dev:amd64": "3.21.12-3",
+					"/bookworm/libpython3.11-dev:amd64": "3.11.2-6+deb12u6",
 					"/bookworm/libstdc++-12-dev:amd64": "12.2.0-14+deb12u1",
 					"/bookworm/libstdc++6:amd64": "12.2.0-14+deb12u1",
 					"/bookworm/libthrift-0.17.0:amd64": "0.17.0-2+b2",
 					"/bookworm/libthrift-dev:amd64": "0.17.0-2+b2",
 					"/bookworm/libtool:all": "2.4.7-7~deb12u1",
+					"/bookworm/libudev-dev:amd64": "252.39-1~deb12u1",
+					"/bookworm/libudev1:amd64": "252.39-1~deb12u1",
+					"/bookworm/libusb-1.0-0-dev:amd64": "2:1.0.26-1",
+					"/bookworm/libusb-1.0-0:amd64": "2:1.0.26-1",
 					"/bookworm/libwrap0:amd64": "7.6.q-32",
 					"/bookworm/libyang2-dev:amd64": "2.1.30-2",
 					"/bookworm/libz3-dev:amd64": "4.8.12-3.1",
@@ -126,6 +136,7 @@
 					"/bookworm/python3-six:all": "1.16.0-4",
 					"/bookworm/python3-systemd:amd64": "235-1+b2",
 					"/bookworm/python3-thrift:amd64": "0.17.0-2+b2",
+					"/bookworm/python3.11-dev:amd64": "3.11.2-6+deb12u6",
 					"/bookworm/python3:amd64": "3.11.2-1+b1",
 					"/bookworm/rsyslog:amd64": "8.2302.0-1+deb12u1",
 					"/bookworm/sshpass:amd64": "1.09-1+b1",
@@ -167,6 +178,13 @@
 			"sets": {
 				"amd64": {
 					"/bookworm/libpcre2-dev:amd64": "10.42-1"
+				}
+			}
+		},
+		"libyang_deps": {
+			"sets": {
+				"amd64": {
+					"/bookworm/libpcre3-dev:amd64": "2:8.39-15"
 				}
 			}
 		},
@@ -3125,7 +3143,8 @@
 				"/bookworm/libasan8:amd64=12.2.0-14+deb12u1",
 				"/bookworm/libatomic1:amd64=12.2.0-14+deb12u1",
 				"/bookworm/libitm1:amd64=12.2.0-14+deb12u1",
-				"/bookworm/libgomp1:amd64=12.2.0-14+deb12u1"
+				"/bookworm/libgomp1:amd64=12.2.0-14+deb12u1",
+				"/bookworm/linux-libc-dev:amd64=6.1.148-1"
 			],
 			"filename": "pool/main/b/boost1.74/libboost-atomic1.74-dev_1.74.0+ds1-21_amd64.deb",
 			"name": "libboost-atomic1.74-dev",
@@ -3234,7 +3253,8 @@
 				"/bookworm/libasan8:amd64=12.2.0-14+deb12u1",
 				"/bookworm/libatomic1:amd64=12.2.0-14+deb12u1",
 				"/bookworm/libitm1:amd64=12.2.0-14+deb12u1",
-				"/bookworm/libgomp1:amd64=12.2.0-14+deb12u1"
+				"/bookworm/libgomp1:amd64=12.2.0-14+deb12u1",
+				"/bookworm/linux-libc-dev:amd64=6.1.148-1"
 			],
 			"filename": "pool/main/b/boost1.74/libboost-chrono1.74-dev_1.74.0+ds1-21_amd64.deb",
 			"name": "libboost-chrono1.74-dev",
@@ -3728,7 +3748,8 @@
 				"/bookworm/libatomic1:amd64=12.2.0-14+deb12u1",
 				"/bookworm/libitm1:amd64=12.2.0-14+deb12u1",
 				"/bookworm/libgomp1:amd64=12.2.0-14+deb12u1",
-				"/bookworm/libboost-date-time1.74.0:amd64=1.74.0+ds1-21"
+				"/bookworm/libboost-date-time1.74.0:amd64=1.74.0+ds1-21",
+				"/bookworm/linux-libc-dev:amd64=6.1.148-1"
 			],
 			"filename": "pool/main/b/boost1.74/libboost-date-time1.74-dev_1.74.0+ds1-21_amd64.deb",
 			"name": "libboost-date-time1.74-dev",
@@ -6790,7 +6811,8 @@
 				"/bookworm/libasan8:amd64=12.2.0-14+deb12u1",
 				"/bookworm/libatomic1:amd64=12.2.0-14+deb12u1",
 				"/bookworm/libitm1:amd64=12.2.0-14+deb12u1",
-				"/bookworm/libgomp1:amd64=12.2.0-14+deb12u1"
+				"/bookworm/libgomp1:amd64=12.2.0-14+deb12u1",
+				"/bookworm/linux-libc-dev:amd64=6.1.148-1"
 			],
 			"filename": "pool/main/b/boost-defaults/libboost-system-dev_1.74.0.3_amd64.deb",
 			"name": "libboost-system-dev",
@@ -6836,7 +6858,8 @@
 				"/bookworm/libasan8:amd64=12.2.0-14+deb12u1",
 				"/bookworm/libatomic1:amd64=12.2.0-14+deb12u1",
 				"/bookworm/libitm1:amd64=12.2.0-14+deb12u1",
-				"/bookworm/libgomp1:amd64=12.2.0-14+deb12u1"
+				"/bookworm/libgomp1:amd64=12.2.0-14+deb12u1",
+				"/bookworm/linux-libc-dev:amd64=6.1.148-1"
 			],
 			"filename": "pool/main/b/boost1.74/libboost-system1.74-dev_1.74.0+ds1-21_amd64.deb",
 			"name": "libboost-system1.74-dev",
@@ -7013,7 +7036,8 @@
 				"/bookworm/libboost-chrono1.74-dev:amd64=1.74.0+ds1-21",
 				"/bookworm/libboost-chrono1.74.0:amd64=1.74.0+ds1-21",
 				"/bookworm/libboost-atomic1.74-dev:amd64=1.74.0+ds1-21",
-				"/bookworm/libboost-atomic1.74.0:amd64=1.74.0+ds1-21"
+				"/bookworm/libboost-atomic1.74.0:amd64=1.74.0+ds1-21",
+				"/bookworm/linux-libc-dev:amd64=6.1.148-1"
 			],
 			"filename": "pool/main/b/boost-defaults/libboost-thread-dev_1.74.0.3_amd64.deb",
 			"name": "libboost-thread-dev",
@@ -7069,7 +7093,8 @@
 				"/bookworm/libboost-chrono1.74-dev:amd64=1.74.0+ds1-21",
 				"/bookworm/libboost-chrono1.74.0:amd64=1.74.0+ds1-21",
 				"/bookworm/libboost-atomic1.74-dev:amd64=1.74.0+ds1-21",
-				"/bookworm/libboost-atomic1.74.0:amd64=1.74.0+ds1-21"
+				"/bookworm/libboost-atomic1.74.0:amd64=1.74.0+ds1-21",
+				"/bookworm/linux-libc-dev:amd64=6.1.148-1"
 			],
 			"filename": "pool/main/b/boost1.74/libboost-thread1.74-dev_1.74.0+ds1-21_amd64.deb",
 			"name": "libboost-thread1.74-dev",
@@ -12428,6 +12453,45 @@
 			"suite": "bookworm",
 			"version": "1.5.2-6+deb12u1"
 		},
+		"/bookworm/libpam0g-dev:amd64=1.5.2-6+deb12u1": {
+			"architecture": "amd64",
+			"depends_on": [
+				"/bookworm/libc6-dev:amd64=2.36-9+deb12u13",
+				"/bookworm/rpcsvc-proto:amd64=1.4.3-1",
+				"/bookworm/libc6:amd64=2.36-9+deb12u13",
+				"/bookworm/libgcc-s1:amd64=12.2.0-14+deb12u1",
+				"/bookworm/gcc-12-base:amd64=12.2.0-14+deb12u1",
+				"/bookworm/libnsl-dev:amd64=1.3.0-2",
+				"/bookworm/libtirpc-dev:amd64=1.3.3+ds-1",
+				"/bookworm/libtirpc3:amd64=1.3.3+ds-1",
+				"/bookworm/libtirpc-common:all=1.3.3+ds-1",
+				"/bookworm/libgssapi-krb5-2:amd64=1.20.1-2+deb12u4",
+				"/bookworm/libkrb5support0:amd64=1.20.1-2+deb12u4",
+				"/bookworm/libkrb5-3:amd64=1.20.1-2+deb12u4",
+				"/bookworm/libkeyutils1:amd64=1.6.3-2",
+				"/bookworm/libk5crypto3:amd64=1.20.1-2+deb12u4",
+				"/bookworm/libcom-err2:amd64=1.47.0-2+b2",
+				"/bookworm/libnsl2:amd64=1.3.0-2",
+				"/bookworm/libcrypt-dev:amd64=1:4.4.33-2",
+				"/bookworm/libcrypt1:amd64=1:4.4.33-2",
+				"/bookworm/linux-libc-dev:amd64=6.1.148-1",
+				"/bookworm/libc-dev-bin:amd64=2.36-9+deb12u13",
+				"/bookworm/libpam0g:amd64=1.5.2-6+deb12u1",
+				"/bookworm/debconf:all=1.5.82",
+				"/bookworm/libaudit1:amd64=1:3.0.9-1",
+				"/bookworm/libcap-ng0:amd64=0.8.3-1+b3",
+				"/bookworm/libaudit-common:all=1:3.0.9-1",
+				"/bookworm-updates/libssl3:amd64=3.0.17-1~deb12u2",
+				"/bookworm-security/linux-libc-dev:amd64=6.1.153-1"
+			],
+			"filename": "pool/main/p/pam/libpam0g-dev_1.5.2-6+deb12u1_amd64.deb",
+			"name": "libpam0g-dev",
+			"section": "libdevel",
+			"sha256": "c89dbd556da7c70a5fc374d8ceeda86512543533e18d695e679356c99f4ea2bb",
+			"size": 147880,
+			"suite": "bookworm",
+			"version": "1.5.2-6+deb12u1"
+		},
 		"/bookworm/libpam0g:amd64=1.5.2-6+deb12u1": {
 			"architecture": "amd64",
 			"depends_on": [
@@ -12817,6 +12881,21 @@
 			"suite": "bookworm",
 			"version": "0.17-2"
 		},
+		"/bookworm/libpcre16-3:amd64=2:8.39-15": {
+			"architecture": "amd64",
+			"depends_on": [
+				"/bookworm/libc6:amd64=2.36-9+deb12u13",
+				"/bookworm/libgcc-s1:amd64=12.2.0-14+deb12u1",
+				"/bookworm/gcc-12-base:amd64=12.2.0-14+deb12u1"
+			],
+			"filename": "pool/main/p/pcre3/libpcre16-3_8.39-15_amd64.deb",
+			"name": "libpcre16-3",
+			"section": "libs",
+			"sha256": "b06478314648ed3cd886438e825c97fc12631533c684f61f541cada5ca77f959",
+			"size": 257464,
+			"suite": "bookworm",
+			"version": "2:8.39-15"
+		},
 		"/bookworm/libpcre2-16-0:amd64=10.42-1": {
 			"architecture": "amd64",
 			"depends_on": [
@@ -12915,6 +12994,92 @@
 			"size": 55396,
 			"suite": "bookworm",
 			"version": "10.42-1"
+		},
+		"/bookworm/libpcre3-dev:amd64=2:8.39-15": {
+			"architecture": "amd64",
+			"depends_on": [
+				"/bookworm/libpcrecpp0v5:amd64=2:8.39-15",
+				"/bookworm/libstdc++6:amd64=12.2.0-14+deb12u1",
+				"/bookworm/libgcc-s1:amd64=12.2.0-14+deb12u1",
+				"/bookworm/libc6:amd64=2.36-9+deb12u13",
+				"/bookworm/gcc-12-base:amd64=12.2.0-14+deb12u1",
+				"/bookworm/libpcre3:amd64=2:8.39-15",
+				"/bookworm/libpcre32-3:amd64=2:8.39-15",
+				"/bookworm/libpcre16-3:amd64=2:8.39-15",
+				"/bookworm/libc6-dev:amd64=2.36-9+deb12u13",
+				"/bookworm/rpcsvc-proto:amd64=1.4.3-1",
+				"/bookworm/libnsl-dev:amd64=1.3.0-2",
+				"/bookworm/libtirpc-dev:amd64=1.3.3+ds-1",
+				"/bookworm/libtirpc3:amd64=1.3.3+ds-1",
+				"/bookworm/libtirpc-common:all=1.3.3+ds-1",
+				"/bookworm/libgssapi-krb5-2:amd64=1.20.1-2+deb12u4",
+				"/bookworm/libkrb5support0:amd64=1.20.1-2+deb12u4",
+				"/bookworm/libkrb5-3:amd64=1.20.1-2+deb12u4",
+				"/bookworm/libkeyutils1:amd64=1.6.3-2",
+				"/bookworm/libk5crypto3:amd64=1.20.1-2+deb12u4",
+				"/bookworm/libcom-err2:amd64=1.47.0-2+b2",
+				"/bookworm/libnsl2:amd64=1.3.0-2",
+				"/bookworm/libcrypt-dev:amd64=1:4.4.33-2",
+				"/bookworm/libcrypt1:amd64=1:4.4.33-2",
+				"/bookworm/linux-libc-dev:amd64=6.1.148-1",
+				"/bookworm/libc-dev-bin:amd64=2.36-9+deb12u13",
+				"/bookworm-updates/libssl3:amd64=3.0.17-1~deb12u2",
+				"/bookworm-security/linux-libc-dev:amd64=6.1.153-1"
+			],
+			"filename": "pool/main/p/pcre3/libpcre3-dev_8.39-15_amd64.deb",
+			"name": "libpcre3-dev",
+			"section": "libdevel",
+			"sha256": "a2bd77ac61b2dbbbc6cac3f7238780a591cf23774f9f0b1fc79d1c07b6d7f0c4",
+			"size": 653392,
+			"suite": "bookworm",
+			"version": "2:8.39-15"
+		},
+		"/bookworm/libpcre32-3:amd64=2:8.39-15": {
+			"architecture": "amd64",
+			"depends_on": [
+				"/bookworm/libc6:amd64=2.36-9+deb12u13",
+				"/bookworm/libgcc-s1:amd64=12.2.0-14+deb12u1",
+				"/bookworm/gcc-12-base:amd64=12.2.0-14+deb12u1"
+			],
+			"filename": "pool/main/p/pcre3/libpcre32-3_8.39-15_amd64.deb",
+			"name": "libpcre32-3",
+			"section": "libs",
+			"sha256": "6a722e166affbf33ce40954b01d7df8ba5985cd4500a21046fd97289b9d8c497",
+			"size": 248144,
+			"suite": "bookworm",
+			"version": "2:8.39-15"
+		},
+		"/bookworm/libpcre3:amd64=2:8.39-15": {
+			"architecture": "amd64",
+			"depends_on": [
+				"/bookworm/libc6:amd64=2.36-9+deb12u13",
+				"/bookworm/libgcc-s1:amd64=12.2.0-14+deb12u1",
+				"/bookworm/gcc-12-base:amd64=12.2.0-14+deb12u1"
+			],
+			"filename": "pool/main/p/pcre3/libpcre3_8.39-15_amd64.deb",
+			"name": "libpcre3",
+			"section": "libs",
+			"sha256": "993ea623ce5b42d67f653f2faaa7ef15e7c9d72bfcb93e22a1eaff7aa3532303",
+			"size": 340864,
+			"suite": "bookworm",
+			"version": "2:8.39-15"
+		},
+		"/bookworm/libpcrecpp0v5:amd64=2:8.39-15": {
+			"architecture": "amd64",
+			"depends_on": [
+				"/bookworm/libstdc++6:amd64=12.2.0-14+deb12u1",
+				"/bookworm/libgcc-s1:amd64=12.2.0-14+deb12u1",
+				"/bookworm/libc6:amd64=2.36-9+deb12u13",
+				"/bookworm/gcc-12-base:amd64=12.2.0-14+deb12u1",
+				"/bookworm/libpcre3:amd64=2:8.39-15"
+			],
+			"filename": "pool/main/p/pcre3/libpcrecpp0v5_8.39-15_amd64.deb",
+			"name": "libpcrecpp0v5",
+			"section": "libs",
+			"sha256": "ee96bb35fb076ded4ceeb24720d46beb553b3b34b35250a5e694832e8701e175",
+			"size": 142988,
+			"suite": "bookworm",
+			"version": "2:8.39-15"
 		},
 		"/bookworm/libperl5.36:amd64=5.36.0-7+deb12u3": {
 			"architecture": "amd64",
@@ -14769,6 +14934,22 @@
 			"suite": "bookworm",
 			"version": "1.13.1-1"
 		},
+		"/bookworm/libudev-dev:amd64=252.39-1~deb12u1": {
+			"architecture": "amd64",
+			"depends_on": [
+				"/bookworm/libudev1:amd64=252.39-1~deb12u1",
+				"/bookworm/libc6:amd64=2.36-9+deb12u13",
+				"/bookworm/libgcc-s1:amd64=12.2.0-14+deb12u1",
+				"/bookworm/gcc-12-base:amd64=12.2.0-14+deb12u1"
+			],
+			"filename": "pool/main/s/systemd/libudev-dev_252.39-1~deb12u1_amd64.deb",
+			"name": "libudev-dev",
+			"section": "libdevel",
+			"sha256": "22d1b926e3b16fb1f9837ae5ad23373ac2140c792d071d2fc82ddc949aa87524",
+			"size": 52800,
+			"suite": "bookworm",
+			"version": "252.39-1~deb12u1"
+		},
 		"/bookworm/libudev1:amd64=252.39-1~deb12u1": {
 			"architecture": "amd64",
 			"depends_on": [
@@ -14814,6 +14995,39 @@
 			"size": 51172,
 			"suite": "bookworm",
 			"version": "1.6.2-3"
+		},
+		"/bookworm/libusb-1.0-0-dev:amd64=2:1.0.26-1": {
+			"architecture": "amd64",
+			"depends_on": [
+				"/bookworm/libusb-1.0-0:amd64=2:1.0.26-1",
+				"/bookworm/libudev1:amd64=252.39-1~deb12u1",
+				"/bookworm/libc6:amd64=2.36-9+deb12u13",
+				"/bookworm/libgcc-s1:amd64=12.2.0-14+deb12u1",
+				"/bookworm/gcc-12-base:amd64=12.2.0-14+deb12u1"
+			],
+			"filename": "pool/main/libu/libusb-1.0/libusb-1.0-0-dev_1.0.26-1_amd64.deb",
+			"name": "libusb-1.0-0-dev",
+			"section": "libdevel",
+			"sha256": "22a952f48cdb59f1d0c476874facc62418eda5b4c30c5a23a17c28781b426c1b",
+			"size": 83304,
+			"suite": "bookworm",
+			"version": "2:1.0.26-1"
+		},
+		"/bookworm/libusb-1.0-0:amd64=2:1.0.26-1": {
+			"architecture": "amd64",
+			"depends_on": [
+				"/bookworm/libudev1:amd64=252.39-1~deb12u1",
+				"/bookworm/libc6:amd64=2.36-9+deb12u13",
+				"/bookworm/libgcc-s1:amd64=12.2.0-14+deb12u1",
+				"/bookworm/gcc-12-base:amd64=12.2.0-14+deb12u1"
+			],
+			"filename": "pool/main/libu/libusb-1.0/libusb-1.0-0_1.0.26-1_amd64.deb",
+			"name": "libusb-1.0-0",
+			"section": "libs",
+			"sha256": "0a8a6c4a7d944538f2820cbde2a313f2fe6f94c21ffece9e6f372fc2ab8072e1",
+			"size": 62592,
+			"suite": "bookworm",
+			"version": "2:1.0.26-1"
 		},
 		"/bookworm/libuuid1:amd64=2.38.1-5+deb12u3": {
 			"architecture": "amd64",
