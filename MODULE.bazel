@@ -134,12 +134,13 @@ local_path_override(
     path = "../sonic-pins",
 )
 
-bazel_dep(name = "sonic-gnmi", version = "0.0.0")
-local_path_override(
-    module_name = "sonic-gnmi",
-    path = "../sonic-gnmi",
-)
-
+# TODO(bazel-ready): Disabled since gnmi is not working right now.
+# bazel_dep(name = "sonic-gnmi", version = "0.0.0")
+# local_path_override(
+#     module_name = "sonic-gnmi",
+#     path = "../sonic-gnmi",
+# )
+#
 bazel_dep(name = "sonic-build-infra", version = "0.0.0", repo_name = "sonic_build_infra")
 local_path_override(
     module_name = "sonic-build-infra",
