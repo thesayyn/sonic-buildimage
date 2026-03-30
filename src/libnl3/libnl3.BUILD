@@ -67,6 +67,7 @@ bison_cc_library(
     copts = [
         "-fPIC",
         "-I{REPO_DIR}/include/linux-private",
+        "-Wno-unused-parameter",
     ],
     deps = [":private_headers"],
 )
@@ -82,6 +83,7 @@ bison_cc_library(
     copts = [
         "-fPIC",
         "-I{REPO_DIR}/include/linux-private",
+        "-Wno-unused-parameter",
     ],
     deps = [":private_headers"],
 )
@@ -169,6 +171,12 @@ LIBNL_COPTS = [
     # private_headers.includes= (which generates -isystem). Instead, we use -I
     # here to get user-include priority over the toolchain system headers.
     "-I{REPO_DIR}/include/linux-private",
+    # Suppress warnings from upstream third-party code.
+    "-Wno-unused-parameter",
+    "-Wno-sign-compare",
+    "-Wno-format-truncation",
+    "-Wno-maybe-uninitialized",
+    "-Wno-return-type",
 ]
 
 LIBNL_LINKOPTS = []

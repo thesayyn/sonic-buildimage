@@ -48,7 +48,42 @@ libnl3_src(
 )
 
 bazel_dep(name = "rules_flex", version = "0.4")
+flex = use_extension(
+    "@rules_flex//flex/extensions:flex_repository_ext.bzl",
+    "flex_repository_ext",
+)
+flex.repository(
+    name = "flex",
+    version = "2.6.4",
+    extra_copts = [
+        "-O3",
+        "-Wno-format-truncation",
+        "-Wno-unused-parameter",
+        "-Wno-pointer-sign",
+        "-Wno-misleading-indentation",
+        "-Wno-stringop-truncation",
+        "-Wno-alloc-size-larger-than",
+    ],
+)
+use_repo(flex, "flex")
+register_toolchains("@flex//:toolchain")
+
 bazel_dep(name = "rules_bison", version = "0.4")
+bison = use_extension(
+    "@rules_bison//bison/extensions:bison_repository_ext.bzl",
+    "bison_repository_ext",
+)
+bison.repository(
+    name = "bison",
+    version = "3.3.2",
+    extra_copts = [
+        "-O3",
+        "-Wno-sign-compare",
+        "-Wno-discarded-qualifiers",
+    ],
+)
+use_repo(bison, "bison")
+register_toolchains("@bison//:toolchain")
 bazel_dep(name = "rules_m4", version = "0.3")
 # TODO BL: replace with new version of rules_m4 when this merges:
 #  https://github.com/jmillikin/rules_m4/pull/23
