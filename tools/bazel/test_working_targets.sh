@@ -18,11 +18,13 @@ bazel test \
   //dockers/docker-orchagent/tests:site-packages_assert \
   //dockers/docker-base-bookworm/tests:site-packages_assert \
   @libyang3_py3//... \
+  @libyang//... \
   --keep_going \
   --test_output=errors
 
 echo "[= Testing Dependent Repositories =]"
 
+test_repo "../sonic-build-infra" "bazel build ..."
 test_repo "../sonic-utilities" "bazel build :sonic-utilities :dist"
 test_repo "../sonic-utilities" "bazel test //:all --test_output=errors"
 test_repo "../sonic-host-services" "bazel build :sonic-host-services :dist"
@@ -33,7 +35,6 @@ test_repo "../sonic-dash-api" "bazel build ..."
 test_repo "../sonic-swss-common" "bazel build ..."
 test_repo "../sonic-swss" "bazel build ..."
 test_repo "../sonic-pins" "bazel build ..."
-test_repo "../sonic-build-infra" "bazel build ..."
 
 echo "[= Testing Docker Images =]"
 
