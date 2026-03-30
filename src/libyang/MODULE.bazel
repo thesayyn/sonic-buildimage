@@ -31,9 +31,15 @@ apt.sources_list(
     suites = ["bookworm"],
     uris = ["https://snapshot.debian.org/archive/debian/20251001T023456Z"],
 )
+apt.sources_list(
+    architectures = ["amd64"],
+    components = ["main"],
+    suites = ["bookworm-security"],
+    uris = ["https://snapshot.debian.org/archive/debian-security/20251001T023456Z"],
+)
 apt.install(
     dependency_set = "libyang_deps",
-    suites = ["bookworm"],
+    suites = ["bookworm", "bookworm-security"],
     packages = [
         "libpcre3-dev",
         "swig",

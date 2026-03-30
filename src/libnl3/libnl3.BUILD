@@ -68,6 +68,8 @@ bison_cc_library(
         "-fPIC",
         "-I{REPO_DIR}/include/linux-private",
         "-Wno-unused-parameter",
+        # Suppress legitimate bison warnings that are likely inconsequential
+        "-Wno-empty-rule",
     ],
     deps = [":private_headers"],
 )
@@ -84,6 +86,8 @@ bison_cc_library(
         "-fPIC",
         "-I{REPO_DIR}/include/linux-private",
         "-Wno-unused-parameter",
+        # Suppress legitimate bison warnings that are likely inconsequential
+        "-Wno-empty-rule",
     ],
     deps = [":private_headers"],
 )
