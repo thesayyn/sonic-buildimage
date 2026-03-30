@@ -210,12 +210,13 @@ local_path_override(
     path = "../sonic-platform-daemons",
 )
 
-bazel_dep(name = "sonic-mgmt-common", version = "1.0.0")
-local_path_override(
-    module_name = "sonic-mgmt-common",
-    path = "../sonic-mgmt-common",
-)
-
+# TODO(bazel-ready): Commenting out because gnmi is not ready
+# bazel_dep(name = "sonic-mgmt-common", version = "1.0.0")
+# local_path_override(
+#     module_name = "sonic-mgmt-common",
+#     path = "../sonic-mgmt-common",
+# )
+#
 
 # Needed for swss.
 
