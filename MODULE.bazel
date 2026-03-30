@@ -169,9 +169,10 @@ local_path_override(
 
 # TODO(bazel-ready): replace with new version of rules_m4 when this merges:
 #  https://github.com/jmillikin/rules_m4/pull/23
-local_path_override(
+git_override(
     module_name = "rules_m4",
-    path = "../rules_m4",
+    commit = "54e353395a48d5790bbe3e8ed87e0c7c0b730c3e",
+    remote = "https://github.com/blorente/rules_m4",
 )
 
 bazel_dep(name = "libyang3_py3", version = "3.1.0")

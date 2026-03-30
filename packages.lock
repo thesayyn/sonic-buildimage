@@ -86,8 +86,6 @@
 					"/bookworm/libpcap-dev:amd64": "1.10.3-1",
 					"/bookworm/libpcap0.8:amd64": "1.10.3-1",
 					"/bookworm/libpcre2-8-0:amd64": "10.42-1",
-					"/bookworm/libpcre3-dev:amd64": "2:8.39-15",
-					"/bookworm/libpcre3:amd64": "2:8.39-15",
 					"/bookworm/libprotobuf-dev:amd64": "3.21.12-3",
 					"/bookworm/libprotobuf32:amd64": "3.21.12-3",
 					"/bookworm/libprotoc-dev:amd64": "3.21.12-3",
