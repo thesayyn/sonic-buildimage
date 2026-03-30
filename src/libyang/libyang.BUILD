@@ -290,6 +290,7 @@ swig_lib_deb(
 )
 
 # Generate C++ wrapper and Python module from SWIG interface
+# TODO(bazel-ready): Solve the warnings.
 swig_gen(
     name = "yang_swig_gen",
     interface = "swig/python/yang.i",

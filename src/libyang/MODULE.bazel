@@ -53,7 +53,7 @@ libyang_src = use_repo_rule("//:libyang_src.bzl", "libyang_src")
 libyang_src(
     name = "libyang_src",
     urls = ["https://github.com/CESNET/libyang/archive/refs/tags/v1.0-r4.tar.gz"],
-    sha256 = "",  # TODO: fill in after downloading the tarball
+    sha256 = "411f0c675b0858f8deabc0545e33fbd791ff7c7a5b7d2c27e347e3973d5b8ae4",
     strip_prefix = "libyang-1.0-r4",
     build_file_template = "//:libyang.BUILD",
     patches = [
