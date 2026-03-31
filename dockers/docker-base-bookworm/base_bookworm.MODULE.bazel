@@ -138,6 +138,10 @@ apt.install(
 
         # from dockers/docker-sflow
         "dmidecode",
+
+        # from dockers/docker-database
+        # "redis-tools", already installed
+        "redis-server",
     ],
     suites = [
         "bookworm",

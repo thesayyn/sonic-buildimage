@@ -1,0 +1,77 @@
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load")
+load("@tar.bzl", "mutate", "tar")
+load("@sonic_build_infra//python:site_packages.bzl", "site_packages")
+load("@rules_deb//distroless:defs.bzl", "flatten")
+
+site_packages(
+    name = "pip-packages",
+    srcs = [
+        "@pip//click",
+    ],
+)
+
+tar(
+    name = "jinja_templates",
+    srcs = [
+        "critical_processes.j2",
+        "database_config.json.j2",
+        "database_global.json.j2",
+        "multi_database_config.json.j2",
+        "supervisord.conf.j2",
+    ],
+    mutate = mutate(
+        mtime = "0",
+        package_dir = "./usr/share/sonic/templates",
+        strip_prefix = package_name(),
+    ),
+)
+
+tar(
+    name = "source_files",
+    srcs = [
+        "docker-database-init.sh",
+        "flush_unused_database",
+        "//files:image_config/sysctl/sysctl-net.conf",
+        "//files:scripts/update_chassisdb_config",
+    ],
+    mtree = [
+        "./usr/local/bin/docker-database-init.sh mode=755 time=0 type=file content=$(location :docker-database-init.sh)",
+        "./usr/local/bin/flush_unused_database mode=755 time=0 type=file content=$(location :flush_unused_database)",
+        "./etc/sysctl.d/sysctl-net.conf time=0 type=file content=$(location //files:image_config/sysctl/sysctl-net.conf)",
+        "./usr/local/bin/update_chassisdb_config mode=755 time=0 type=file content=$(location //files:scripts/update_chassisdb_config)",
+    ],
+)
+
+# $(DOCKER_DATABASE)_DEPENDS += \
+#                               $(SONIC_DB_CLI) \
+flatten(
+    name = "rdeps",
+    deduplicate = True,
+    tars = [
+        "@sonic_dash_api//:libdashapi_dev_pkg",
+        "@sonic_swss_common//:libswsscommon_pkg",
+        "@sonic_swss_common//:sonic-db-cli_pkg",
+    ],
+)
+
+oci_image(
+    name = "docker-database",
+    base = "//dockers/docker-config-engine-bookworm",
+    entrypoint = ["/usr/local/bin/docker-database-init.sh"],
+    env = {
+        "DEBIAN_FRONTEND": "noninteractive",
+    },
+    tars = [
+        ":pip-packages",
+        ":jinja_templates",
+        ":source_files",
+        ":rdeps",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+oci_load(
+    name = "load",
+    image = ":docker-database",
+    repo_tags = ["docker-database:latest"],
+)

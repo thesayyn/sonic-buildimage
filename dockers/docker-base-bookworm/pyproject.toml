@@ -28,4 +28,7 @@ dependencies = [
 
     # dockers-orchagent deps
     "scapy==2.4.5",
+
+    # dockers-database deps
+    "click", # No version specified in the slave container.
 ]
