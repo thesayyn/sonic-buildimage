@@ -309,6 +309,177 @@ cc_shared_library(
     visibility = ["//visibility:public"],
 )
 
+# =============================================================================
+# CLI library: libnl-cli-3
+# =============================================================================
+
+cc_library(
+    name = "libnl_cli_3",
+    srcs = glob(["src/lib/*.c"]),
+    copts = LIBNL_COPTS,
+    defines = [
+        'PKGLIBDIR=\\"/usr/lib/x86_64-linux-gnu/libnl\\"',
+    ],
+    deps = [
+        ":libnl_3",
+        ":libnl_genl_3",
+        ":libnl_nf_3",
+        ":libnl_route_3",
+        ":private_headers",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+cc_shared_library(
+    name = "libnl_cli_3_shared",
+    deps = [":libnl_cli_3"],
+    dynamic_deps = [
+        ":libnl_3_shared",
+        ":libnl_genl_3_shared",
+        ":libnl_nf_3_shared",
+        ":libnl_route_3_shared",
+    ],
+    user_link_flags = [
+        "-Wl,--version-script=$(location libnl-cli-3.sym)",
+        "-Wl,-soname,libnl-cli-3.so.200",
+    ],
+    additional_linker_inputs = ["libnl-cli-3.sym"],
+    visibility = ["//visibility:public"],
+)
+
+# CLI plugin shared objects installed to /usr/lib/x86_64-linux-gnu/libnl-3/cli/
+# These are loadable modules (not linked libraries), built as individual .so files.
+
+cc_library(
+    name = "libnl_cli_cls_basic",
+    srcs = ["lib/cli/cls/basic.c"],
+    copts = LIBNL_COPTS,
+    deps = [":libnl_3", ":libnl_cli_3", ":libnl_route_3", ":private_headers"],
+)
+
+cc_shared_library(
+    name = "libnl_cli_cls_basic_shared",
+    deps = [":libnl_cli_cls_basic"],
+    dynamic_deps = [":libnl_3_shared", ":libnl_cli_3_shared", ":libnl_route_3_shared"],
+)
+
+cc_library(
+    name = "libnl_cli_cls_cgroup",
+    srcs = ["lib/cli/cls/cgroup.c"],
+    copts = LIBNL_COPTS,
+    deps = [":libnl_3", ":libnl_cli_3", ":libnl_route_3", ":private_headers"],
+)
+
+cc_shared_library(
+    name = "libnl_cli_cls_cgroup_shared",
+    deps = [":libnl_cli_cls_cgroup"],
+    dynamic_deps = [":libnl_3_shared", ":libnl_cli_3_shared", ":libnl_route_3_shared"],
+)
+
+cc_library(
+    name = "libnl_cli_qdisc_bfifo",
+    srcs = ["lib/cli/qdisc/bfifo.c"],
+    copts = LIBNL_COPTS,
+    deps = [":libnl_3", ":libnl_cli_3", ":libnl_route_3", ":private_headers"],
+)
+
+cc_shared_library(
+    name = "libnl_cli_qdisc_bfifo_shared",
+    deps = [":libnl_cli_qdisc_bfifo"],
+    dynamic_deps = [":libnl_3_shared", ":libnl_cli_3_shared", ":libnl_route_3_shared"],
+)
+
+cc_library(
+    name = "libnl_cli_qdisc_blackhole",
+    srcs = ["lib/cli/qdisc/blackhole.c"],
+    copts = LIBNL_COPTS,
+    deps = [":libnl_3", ":libnl_cli_3", ":libnl_route_3", ":private_headers"],
+)
+
+cc_shared_library(
+    name = "libnl_cli_qdisc_blackhole_shared",
+    deps = [":libnl_cli_qdisc_blackhole"],
+    dynamic_deps = [":libnl_3_shared", ":libnl_cli_3_shared", ":libnl_route_3_shared"],
+)
+
+cc_library(
+    name = "libnl_cli_qdisc_fq_codel",
+    srcs = ["lib/cli/qdisc/fq_codel.c"],
+    copts = LIBNL_COPTS,
+    deps = [":libnl_3", ":libnl_cli_3", ":libnl_route_3", ":private_headers"],
+)
+
+cc_shared_library(
+    name = "libnl_cli_qdisc_fq_codel_shared",
+    deps = [":libnl_cli_qdisc_fq_codel"],
+    dynamic_deps = [":libnl_3_shared", ":libnl_cli_3_shared", ":libnl_route_3_shared"],
+)
+
+cc_library(
+    name = "libnl_cli_qdisc_hfsc",
+    srcs = ["lib/cli/qdisc/hfsc.c"],
+    copts = LIBNL_COPTS,
+    deps = [":libnl_3", ":libnl_cli_3", ":libnl_route_3", ":private_headers"],
+)
+
+cc_shared_library(
+    name = "libnl_cli_qdisc_hfsc_shared",
+    deps = [":libnl_cli_qdisc_hfsc"],
+    dynamic_deps = [":libnl_3_shared", ":libnl_cli_3_shared", ":libnl_route_3_shared"],
+)
+
+cc_library(
+    name = "libnl_cli_qdisc_htb",
+    srcs = ["lib/cli/qdisc/htb.c"],
+    copts = LIBNL_COPTS,
+    deps = [":libnl_3", ":libnl_cli_3", ":libnl_route_3", ":private_headers"],
+)
+
+cc_shared_library(
+    name = "libnl_cli_qdisc_htb_shared",
+    deps = [":libnl_cli_qdisc_htb"],
+    dynamic_deps = [":libnl_3_shared", ":libnl_cli_3_shared", ":libnl_route_3_shared"],
+)
+
+cc_library(
+    name = "libnl_cli_qdisc_ingress",
+    srcs = ["lib/cli/qdisc/ingress.c"],
+    copts = LIBNL_COPTS,
+    deps = [":libnl_3", ":libnl_cli_3", ":libnl_route_3", ":private_headers"],
+)
+
+cc_shared_library(
+    name = "libnl_cli_qdisc_ingress_shared",
+    deps = [":libnl_cli_qdisc_ingress"],
+    dynamic_deps = [":libnl_3_shared", ":libnl_cli_3_shared", ":libnl_route_3_shared"],
+)
+
+cc_library(
+    name = "libnl_cli_qdisc_pfifo",
+    srcs = ["lib/cli/qdisc/pfifo.c"],
+    copts = LIBNL_COPTS,
+    deps = [":libnl_3", ":libnl_cli_3", ":libnl_route_3", ":private_headers"],
+)
+
+cc_shared_library(
+    name = "libnl_cli_qdisc_pfifo_shared",
+    deps = [":libnl_cli_qdisc_pfifo"],
+    dynamic_deps = [":libnl_3_shared", ":libnl_cli_3_shared", ":libnl_route_3_shared"],
+)
+
+cc_library(
+    name = "libnl_cli_qdisc_plug",
+    srcs = ["lib/cli/qdisc/plug.c"],
+    copts = LIBNL_COPTS,
+    deps = [":libnl_3", ":libnl_cli_3", ":libnl_route_3", ":private_headers"],
+)
+
+cc_shared_library(
+    name = "libnl_cli_qdisc_plug_shared",
+    deps = [":libnl_cli_qdisc_plug"],
+    dynamic_deps = [":libnl_3_shared", ":libnl_cli_3_shared", ":libnl_route_3_shared"],
+)
+
 # TODO(bazel-ready): Parameterize tar files by target architecture.
 # TODO(bazel-ready): Generate `.200` packages if needed.
 
@@ -348,6 +519,38 @@ tar(
     mtree = [
         "./usr/lib/x86_64-linux-gnu/libnl-nf-3.so.200 uid=0 gid=0 mode=0755 type=file content=$(location :libnl_nf_3_shared)",
         "./usr/lib/x86_64-linux-gnu/libnl-nf-3.so uid=0 gid=0 mode=0755 type=link link=libnl-nf-3.so.200",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+tar(
+    name = "libnl-cli-3_pkg",
+    srcs = [
+        ":libnl_cli_3_shared",
+        ":libnl_cli_cls_basic_shared",
+        ":libnl_cli_cls_cgroup_shared",
+        ":libnl_cli_qdisc_bfifo_shared",
+        ":libnl_cli_qdisc_blackhole_shared",
+        ":libnl_cli_qdisc_fq_codel_shared",
+        ":libnl_cli_qdisc_hfsc_shared",
+        ":libnl_cli_qdisc_htb_shared",
+        ":libnl_cli_qdisc_ingress_shared",
+        ":libnl_cli_qdisc_pfifo_shared",
+        ":libnl_cli_qdisc_plug_shared",
+    ],
+    mtree = [
+        "./usr/lib/x86_64-linux-gnu/libnl-cli-3.so.200 uid=0 gid=0 mode=0755 type=file content=$(location :libnl_cli_3_shared)",
+        "./usr/lib/x86_64-linux-gnu/libnl-cli-3.so uid=0 gid=0 mode=0755 type=link link=libnl-cli-3.so.200",
+        "./usr/lib/x86_64-linux-gnu/libnl-3/cli/cls/basic.so uid=0 gid=0 mode=0755 type=file content=$(location :libnl_cli_cls_basic_shared)",
+        "./usr/lib/x86_64-linux-gnu/libnl-3/cli/cls/cgroup.so uid=0 gid=0 mode=0755 type=file content=$(location :libnl_cli_cls_cgroup_shared)",
+        "./usr/lib/x86_64-linux-gnu/libnl-3/cli/qdisc/bfifo.so uid=0 gid=0 mode=0755 type=file content=$(location :libnl_cli_qdisc_bfifo_shared)",
+        "./usr/lib/x86_64-linux-gnu/libnl-3/cli/qdisc/blackhole.so uid=0 gid=0 mode=0755 type=file content=$(location :libnl_cli_qdisc_blackhole_shared)",
+        "./usr/lib/x86_64-linux-gnu/libnl-3/cli/qdisc/fq_codel.so uid=0 gid=0 mode=0755 type=file content=$(location :libnl_cli_qdisc_fq_codel_shared)",
+        "./usr/lib/x86_64-linux-gnu/libnl-3/cli/qdisc/hfsc.so uid=0 gid=0 mode=0755 type=file content=$(location :libnl_cli_qdisc_hfsc_shared)",
+        "./usr/lib/x86_64-linux-gnu/libnl-3/cli/qdisc/htb.so uid=0 gid=0 mode=0755 type=file content=$(location :libnl_cli_qdisc_htb_shared)",
+        "./usr/lib/x86_64-linux-gnu/libnl-3/cli/qdisc/ingress.so uid=0 gid=0 mode=0755 type=file content=$(location :libnl_cli_qdisc_ingress_shared)",
+        "./usr/lib/x86_64-linux-gnu/libnl-3/cli/qdisc/pfifo.so uid=0 gid=0 mode=0755 type=file content=$(location :libnl_cli_qdisc_pfifo_shared)",
+        "./usr/lib/x86_64-linux-gnu/libnl-3/cli/qdisc/plug.so uid=0 gid=0 mode=0755 type=file content=$(location :libnl_cli_qdisc_plug_shared)",
     ],
     visibility = ["//visibility:public"],
 )
@@ -447,6 +650,27 @@ write_file(
     ],
 )
 
+# Generated from the upstream libnl-cli-3.0.pc.in template with default
+# Debian bookworm amd64 install paths (prefix=/usr, libdir=x86_64-linux-gnu).
+write_file(
+    name = "libnl3_cli_pc_generated",
+    out = "libnl-cli-3.0.pc",
+    content = [
+        "prefix=/usr",
+        "exec_prefix=${prefix}",
+        "libdir=${prefix}/lib/x86_64-linux-gnu",
+        "includedir=${prefix}/include/libnl3",
+        "",
+        "Name: libnl-cli-3.0",
+        "Description: CLI Netlink Library",
+        "Version: 3.7.0",
+        "Requires: libnl-3.0 >= 3.7.0 libnl-route-3.0 >= 3.7.0 libnl-genl-3.0 >= 3.7.0 libnl-nf-3.0 >= 3.7.0",
+        "Libs: -L${libdir} -lnl-cli-3",
+        "Cflags: -I${includedir}",
+        "",
+    ],
+)
+
 tar(
     name = "libnl3_pkgconfig",
     srcs = [
@@ -454,6 +678,7 @@ tar(
         ":libnl3_genl_pc_generated",
         ":libnl3_route_pc_generated",
         ":libnl3_nf_pc_generated",
+        ":libnl3_cli_pc_generated",
     ],
     mutate = mutate(
         strip_prefix = package_name(),
@@ -504,4 +729,16 @@ flatten(
         ":libnl-route-3_pkg",
     ],
     visibility = ["//visibility:public"],
+)
+
+# libnl-cli-3-dev only contains the unversioned symlink and pkgconfig;
+# the runtime .so and plugins are in libnl-cli-3_pkg.
+flatten(
+    name = "libnl-cli-3-dev_pkg",
+    tars = [
+        ":libnl-cli-3_pkg",
+        ":libnl-3-dev_pkg",
+    ],
+    visibility = ["//visibility:public"],
+    deduplicate = True,
 )
