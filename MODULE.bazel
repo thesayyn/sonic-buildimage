@@ -171,7 +171,7 @@ local_path_override(
 #  https://github.com/jmillikin/rules_m4/pull/23
 git_override(
     module_name = "rules_m4",
-    commit = "54e353395a48d5790bbe3e8ed87e0c7c0b730c3e",
+    commit = "54e35332761523b8b8c7e7a17c8fd3733e53e3e7",
     remote = "https://github.com/blorente/rules_m4",
 )
 
