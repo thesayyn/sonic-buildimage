@@ -26,6 +26,7 @@
 					"/bookworm/dmidecode:amd64": "3.4-1",
 					"/bookworm/doxygen:amd64": "1.9.4-4",
 					"/bookworm/ethtool:amd64": "1:6.1-1",
+					"/bookworm/gawk:amd64": "1:5.2.1-2",
 					"/bookworm/gcc-12-base:amd64": "12.2.0-14+deb12u1",
 					"/bookworm/gdb-minimal:amd64": "13.1-3",
 					"/bookworm/gdbserver:amd64": "13.1-3",
@@ -1888,6 +1889,37 @@
 			"size": 1067728,
 			"suite": "bookworm",
 			"version": "2.37-6"
+		},
+		"/bookworm/gawk:amd64=1:5.2.1-2": {
+			"architecture": "amd64",
+			"depends_on": [
+				"/bookworm/libsigsegv2:amd64=2.14-1",
+				"/bookworm/libc6:amd64=2.36-9+deb12u13",
+				"/bookworm/libgcc-s1:amd64=12.2.0-14+deb12u1",
+				"/bookworm/gcc-12-base:amd64=12.2.0-14+deb12u1",
+				"/bookworm/libreadline8:amd64=8.2-1.3",
+				"/bookworm/libtinfo6:amd64=6.4-4",
+				"/bookworm/readline-common:all=8.2-1.3",
+				"/bookworm/dpkg:amd64=1.21.22",
+				"/bookworm/tar:amd64=1.34+dfsg-1.2+deb12u1",
+				"/bookworm/libselinux1:amd64=3.4-1+b6",
+				"/bookworm/libpcre2-8-0:amd64=10.42-1",
+				"/bookworm/libacl1:amd64=2.3.1-3",
+				"/bookworm/zlib1g:amd64=1:1.2.13.dfsg-1",
+				"/bookworm/libzstd1:amd64=1.5.4+dfsg2-5",
+				"/bookworm/libmd0:amd64=1.0.4-2",
+				"/bookworm-security/liblzma5:amd64=5.4.1-1",
+				"/bookworm/libbz2-1.0:amd64=1.0.8-5+b1",
+				"/bookworm/libmpfr6:amd64=4.2.0-1",
+				"/bookworm/libgmp10:amd64=2:6.2.1+dfsg1-1.1"
+			],
+			"filename": "pool/main/g/gawk/gawk_5.2.1-2_amd64.deb",
+			"name": "gawk",
+			"section": "interpreters",
+			"sha256": "9cd63c1b35ff082092c221a23dcb167f72c4d1c3de3a42e11f16181f42ab3b55",
+			"size": 672772,
+			"suite": "bookworm",
+			"version": "1:5.2.1-2"
 		},
 		"/bookworm/gcc-12-base:amd64=12.2.0-14+deb12u1": {
 			"architecture": "amd64",
@@ -14173,6 +14205,21 @@
 			"size": 275900,
 			"suite": "bookworm",
 			"version": "3.4-2.1"
+		},
+		"/bookworm/libsigsegv2:amd64=2.14-1": {
+			"architecture": "amd64",
+			"depends_on": [
+				"/bookworm/libc6:amd64=2.36-9+deb12u13",
+				"/bookworm/libgcc-s1:amd64=12.2.0-14+deb12u1",
+				"/bookworm/gcc-12-base:amd64=12.2.0-14+deb12u1"
+			],
+			"filename": "pool/main/libs/libsigsegv/libsigsegv2_2.14-1_amd64.deb",
+			"name": "libsigsegv2",
+			"section": "libs",
+			"sha256": "92336a5c47989b82ba4c778adc0ea22fc84450773f2d8428fca4448b0789cfe6",
+			"size": 37152,
+			"suite": "bookworm",
+			"version": "2.14-1"
 		},
 		"/bookworm/libsm6:amd64=2:1.2.3-1": {
 			"architecture": "amd64",
