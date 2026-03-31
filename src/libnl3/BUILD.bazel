@@ -57,3 +57,39 @@ alias(
     actual = "@libnl3_src//:libnl-nf-3-dev_pkg",
     visibility = ["//visibility:public"],
 )
+
+alias(
+    name = "libnl-genl-3_pkg",
+    actual = "@libnl3_src//:libnl-genl-3_pkg",
+    visibility = ["//visibility:public"],
+)
+
+alias(
+    name = "libnl-route-3_pkg",
+    actual = "@libnl3_src//:libnl-route-3_pkg",
+    visibility = ["//visibility:public"],
+)
+
+alias(
+    name = "libnl-nf-3_pkg",
+    actual = "@libnl3_src//:libnl-nf-3_pkg",
+    visibility = ["//visibility:public"],
+)
+
+alias(
+    name = "libnl_cli_3",
+    actual = "@libnl3_src//:libnl_cli_3",
+    visibility = ["//visibility:public"],
+)
+
+alias(
+    name = "libnl-cli-3_pkg",
+    actual = "@libnl3_src//:libnl-cli-3_pkg",
+    visibility = ["//visibility:public"],
+)
+
+alias(
+    name = "libnl-cli-3-dev_pkg",
+    actual = "@libnl3_src//:libnl-cli-3-dev_pkg",
+    visibility = ["//visibility:public"],
+)
