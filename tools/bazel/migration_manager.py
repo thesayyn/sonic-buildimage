@@ -233,12 +233,22 @@ def parse_local_path_overrides(module_bazel_path):
 
 def process_repo(repo_path, visited, results, dirty_repos, unpushed_repos,
                  ignored_bazel_files, todo_hits, bazel_ready_hits,
-                 short=False, include_branch=False, parent_path=None):
+                 short=False, include_branch=False, parent_path=None,
+                 root_path=None):
     abs_path = os.path.realpath(repo_path)
 
     if abs_path in visited:
         return
     visited.add(abs_path)
+
+    # Skip subdirectories that live under src/ of the root repo.
+    # These are sub-modules that share the root's git history and
+    # should not be treated as independent repositories.
+    if root_path:
+        root_abs = os.path.realpath(root_path)
+        src_dir = os.path.join(root_abs, "src") + os.sep
+        if abs_path.startswith(src_dir):
+            return
 
     if not os.path.isdir(abs_path):
         print(f"Warning: path does not exist: {abs_path}", file=sys.stderr)
@@ -267,13 +277,6 @@ def process_repo(repo_path, visited, results, dirty_repos, unpushed_repos,
     if br_hits:
         bazel_ready_hits[abs_path] = br_hits
 
-    # Skip subdirectories that live under src/ of the parent repo.
-    if parent_path:
-        parent_abs = os.path.realpath(parent_path)
-        src_dir = os.path.join(parent_abs, "src") + os.sep
-        if abs_path.startswith(src_dir):
-            return
-
     entry = {
         "repository": repo_name(abs_path),
         "path": abs_path,
@@ -290,12 +293,15 @@ def process_repo(repo_path, visited, results, dirty_repos, unpushed_repos,
         print(f"Warning: no MODULE.bazel in {abs_path}", file=sys.stderr)
         return
 
+    # The first repo processed is the root.
+    effective_root = root_path or abs_path
+
     for rel_path in parse_local_path_overrides(module_bazel):
         dep_path = os.path.join(abs_path, rel_path)
         process_repo(dep_path, visited, results, dirty_repos, unpushed_repos,
                      ignored_bazel_files, todo_hits, bazel_ready_hits,
                      short=short, include_branch=include_branch,
-                     parent_path=abs_path)
+                     parent_path=abs_path, root_path=effective_root)
 
 
 def format_markdown(results, include_branch=False):
