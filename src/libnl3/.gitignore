@@ -13,3 +13,4 @@ debian/libnl-*/
 !*.BUILD
 !BUILD.*
 !BUILD*
+!*.bzl
