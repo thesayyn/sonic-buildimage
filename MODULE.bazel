@@ -80,7 +80,7 @@ single_version_override(
 bazel_dep(name = "rules_boost", version = "0.0.0")
 archive_override(
     module_name = "rules_boost",
-    sha256 = "",
+    integrity = "sha256-T0VNi3xaWul0wHfiNRGqrtrTkhtS6sOSeu9jfiUrZO0=",
     strip_prefix = "rules_boost-a0643ef5ea1f939da59c42a6a5f21d1c0ffcff4f",
     urls = ["https://github.com/nelhage/rules_boost/archive/a0643ef5ea1f939da59c42a6a5f21d1c0ffcff4f.zip"],
 )
