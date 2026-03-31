@@ -41,6 +41,7 @@ oci_image(
     },
     tars = [
         ":apt_deps",
+        "//dockers/docker-base-bookworm:libswsscommon_rdeps",
         ":rdeps",
         "@sonic_swss//:debian-data",
     ],
