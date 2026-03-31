@@ -142,6 +142,7 @@ apt.install(
         # from dockers/docker-database
         # "redis-tools", already installed
         "redis-server",
+        "gawk", # Not required directly, but used in the container startup script
     ],
     suites = [
         "bookworm",
