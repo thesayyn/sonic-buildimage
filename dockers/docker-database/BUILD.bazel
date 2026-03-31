@@ -130,20 +130,6 @@ tar(
     ],
 )
 
-# TODO BL: Move to a more common place
-flatten(
-    name = "libswsscommon_rdeps",
-    deduplicate = True,
-    tars = [
-        "@libnl3//:libnl-3_pkg",
-        "@libnl3//:libnl-genl-3_pkg",
-        "@libnl3//:libnl-route-3_pkg",
-        "@libnl3//:libnl-nf-3_pkg",
-        "@libnl3//:libnl-cli-3_pkg",
-        "@libyang//:libyang_pkg",
-    ],
-)
-
 flatten(
     name = "rdeps",
     deduplicate = True,
@@ -166,7 +152,7 @@ oci_image(
         ":passwd",
         ":group",
         ":pip-packages",
-        ":libswsscommon_rdeps",
+        "//dockers/docker-base-bookworm:libswsscommon_rdeps",
         ":apt_deps",
         ":jinja_templates",
         ":source_files",
