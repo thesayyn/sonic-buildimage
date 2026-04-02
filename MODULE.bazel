@@ -105,12 +105,9 @@ bazel_dep(name = "sonic-py-swsssdk", version = "0.0.0", repo_name = "sonic_py_sw
 bazel_dep(name = "sonic-pins", version = "0.0.0")
 
 # TODO(bazel-ready): Disabled since gnmi is not working right now.
-# bazel_dep(name = "sonic-gnmi", version = "0.0.0")
-# local_path_override(
-#     module_name = "sonic-gnmi",
-#     path = "../sonic-gnmi",
-# )
-#
+bazel_dep(name = "sonic-mgmt-common", version = "1.0.0")
+bazel_dep(name = "sonic-gnmi", version = "0.0.0")
+
 bazel_dep(name = "sonic-build-infra", version = "0.0.0", repo_name = "sonic_build_infra")
 
 register_toolchains("@sonic_build_infra//toolchains/gcc:host_gcc_toolchain")
@@ -133,14 +130,6 @@ bazel_dep(name = "psample", version = "1.1-1")
 bazel_dep(name = "sflowtool", version = "5.04")
 bazel_dep(name = "sonic-platform-common", version = "0.0.0", repo_name = "sonic_platform_common")
 bazel_dep(name = "sonic-platform-daemons", version = "0.0.0", repo_name = "sonic_platform_daemons")
-
-# TODO(bazel-ready): Commenting out because gnmi is not ready
-# bazel_dep(name = "sonic-mgmt-common", version = "1.0.0")
-# local_path_override(
-#     module_name = "sonic-mgmt-common",
-#     path = "../sonic-mgmt-common",
-# )
-#
 
 # Needed for swss.
 

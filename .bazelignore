@@ -10,7 +10,9 @@ src/sflow/sflowtool
 src/sonic-build-infra
 src/sonic-config-engine
 src/sonic-dash-api
+src/sonic-gnmi
 src/sonic-host-services
+src/sonic-mgmt-common
 src/sonic-p4rt/sonic-pins
 src/sonic-platform-common
 src/sonic-platform-daemons
