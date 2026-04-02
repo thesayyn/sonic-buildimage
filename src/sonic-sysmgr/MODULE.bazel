@@ -1,4 +1,4 @@
-module(name = "sonic-sysmgr")
+module(name = "sonic-sysmgr", version = "0.0.0")
 
 # TODO(bazel-ready): Add buildifier for automatic formatting
 
@@ -15,18 +15,10 @@ git_override(
 )
 
 bazel_dep(name = "sonic-build-infra", version = "0.0.0", repo_name = "sonic_build_infra")
-local_path_override(
-    module_name = "sonic-build-infra",
-    path = "../../../sonic-build-infra",
-)
 
 register_toolchains("@sonic_build_infra//toolchains/gcc:host_gcc_toolchain")
 
 bazel_dep(name = "sonic-swss-common", version = "0.0.0", repo_name = "sonic_swss_common")
-local_path_override(
-    module_name = "sonic-swss-common",
-    path = "../../../sonic-swss-common",
-)
 
 apt = use_extension("@rules_deb//apt:extensions.bzl", "apt")
 apt.sources_list(
