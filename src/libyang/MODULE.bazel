@@ -9,10 +9,7 @@ git_override(
     remote = "https://github.com/bazel-contrib/tar.bzl",
 )
 bazel_dep(name = "rules_distroless", version = "0.0.0", repo_name = "rules_deb")
-local_path_override(
-    module_name = "rules_distroless",
-    path = "../../../rules_distroless",
-)
+
 bazel_dep(name = "platforms", version = "1.0.0")
 
 bazel_dep(name = "sonic-build-infra", version = "0.0.0", repo_name = "sonic_build_infra")
