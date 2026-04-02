@@ -10,10 +10,6 @@ bazel_dep(name = "libyang3", version = "3.12.2")
 bazel_dep(name = "tar.bzl", version = "0.8.1")
 
 bazel_dep(name = "sonic-build-infra", version = "0.0.0", repo_name = "sonic_build_infra")
-local_path_override(
-    module_name = "sonic-build-infra",
-    path = "../../../sonic-build-infra"
-)
 
 # Set up pip dependencies for building using uv lockfile
 uv = use_extension("@aspect_rules_py//uv/unstable:extension.bzl", "uv")

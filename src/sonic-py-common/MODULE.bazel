@@ -1,4 +1,4 @@
-module(name = "sonic-py-common")
+module(name = "sonic-py-common", version = "0.0.0")
 
 bazel_dep(name = "rules_python", version = "1.0.0")
 bazel_dep(name = "aspect_rules_py", version = "1.7.1")

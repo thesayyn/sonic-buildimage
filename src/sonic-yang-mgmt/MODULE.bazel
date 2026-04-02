@@ -1,4 +1,4 @@
-module(name = "sonic-yang-mgmt")
+module(name = "sonic-yang-mgmt", version = "0.0.0")
 
 bazel_dep(name = "rules_python", version = "1.0.0")
 bazel_dep(name = "aspect_rules_py", version = "1.7.1")
