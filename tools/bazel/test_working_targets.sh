@@ -24,17 +24,17 @@ bazel test \
 
 echo "[= Testing Dependent Repositories =]"
 
-test_repo "../sonic-build-infra" "bazel build ..."
-test_repo "../sonic-utilities" "bazel build :sonic-utilities :dist"
-test_repo "../sonic-utilities" "bazel test //:all --test_output=errors"
-test_repo "../sonic-host-services" "bazel build :sonic-host-services :dist"
-test_repo "../sonic-host-services" "bazel test //:all --test_output=errors"
-test_repo "../sonic-sairedis/SAI" "bazel build ..."
-test_repo "../sonic-sairedis" "bazel build ..."
-test_repo "../sonic-dash-api" "bazel build ..."
-test_repo "../sonic-swss-common" "bazel build ..."
-test_repo "../sonic-swss" "bazel build ..."
-test_repo "../sonic-pins" "bazel build ..."
+test_repo "src/sonic-build-infra" "bazel build ..."
+test_repo "src/sonic-utilities" "bazel build :sonic-utilities :dist"
+test_repo "src/sonic-utilities" "bazel test //:all --test_output=errors"
+test_repo "src/sonic-host-services" "bazel build :sonic-host-services :dist"
+test_repo "src/sonic-host-services" "bazel test //:all --test_output=errors"
+test_repo "src/sonic-sairedis/SAI" "bazel build ..."
+test_repo "src/sonic-sairedis" "bazel build ..."
+test_repo "src/sonic-dash-api" "bazel build ..."
+test_repo "src/sonic-swss-common" "bazel build ..."
+test_repo "src/sonic-swss" "bazel build ..."
+test_repo "src/sonic-p4rt/sonic-pins" "bazel build ..."
 
 echo "[= Testing Docker Images =]"
 

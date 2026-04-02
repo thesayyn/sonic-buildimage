@@ -8,9 +8,10 @@ bazel_dep(name = "bazel_lib", version = "3.1.1")
 bazel_dep(name = "protobuf", version = "33.4")
 bazel_dep(name = "openconfig_gnoi", version = "0.6.2")
 bazel_dep(name = "rules_distroless", version = "0.0.0", repo_name = "rules_deb")
-local_path_override(
+git_override(
     module_name = "rules_distroless",
-    path = "../../../rules_distroless",
+    commit = "ebfd74a2e07b83235e064bb63ace98a1a5223e02",
+    remote = "https://github.com/bazel-contrib/rules_distroless",
 )
 
 bazel_dep(name = "sonic-build-infra", version = "0.0.0", repo_name = "sonic_build_infra")

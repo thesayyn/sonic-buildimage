@@ -20,9 +20,10 @@ register_toolchains("@bsd_tar_toolchains//:all")
 
 bazel_dep(name = "bazel_lib", version = "3.1.1")
 bazel_dep(name = "rules_distroless", version = "0.0.0", repo_name = "rules_deb")
-local_path_override(
+git_override(
     module_name = "rules_distroless",
-    path = "../rules_distroless",
+    commit = "ebfd74a2e07b83235e064bb63ace98a1a5223e02",
+    remote = "https://github.com/bazel-contrib/rules_distroless",
 )
 
 bazel_dep(name = "aspect_rules_py", version = "1.8.4")
@@ -126,19 +127,19 @@ local_path_override(
 bazel_dep(name = "sonic-swss-common", version = "0.0.0", repo_name = "sonic_swss_common")
 local_path_override(
     module_name = "sonic-swss-common",
-    path = "../sonic-swss-common",
+    path = "src/sonic-swss-common",
 )
 
 bazel_dep(name = "sonic-py-swsssdk", version = "0.0.0", repo_name = "sonic_py_swsssdk")
 local_path_override(
     module_name = "sonic-py-swsssdk",
-    path = "../sonic-py-swsssdk",
+    path = "src/sonic-py-swsssdk",
 )
 
 bazel_dep(name = "sonic-pins", version = "0.0.0")
 local_path_override(
     module_name = "sonic-pins",
-    path = "../sonic-pins",
+    path = "src/sonic-p4rt/sonic-pins",
 )
 
 # TODO(bazel-ready): Disabled since gnmi is not working right now.
@@ -151,7 +152,7 @@ local_path_override(
 bazel_dep(name = "sonic-build-infra", version = "0.0.0", repo_name = "sonic_build_infra")
 local_path_override(
     module_name = "sonic-build-infra",
-    path = "../sonic-build-infra",
+    path = "src/sonic-build-infra",
 )
 
 register_toolchains("@sonic_build_infra//toolchains/gcc:host_gcc_toolchain")
@@ -209,13 +210,13 @@ local_path_override(
 bazel_dep(name = "sonic-platform-common", version = "0.0.0", repo_name = "sonic_platform_common")
 local_path_override(
     module_name = "sonic-platform-common",
-    path = "../sonic-platform-common",
+    path = "src/sonic-platform-common",
 )
 
 bazel_dep(name = "sonic-platform-daemons", version = "0.0.0", repo_name = "sonic_platform_daemons")
 local_path_override(
     module_name = "sonic-platform-daemons",
-    path = "../sonic-platform-daemons",
+    path = "src/sonic-platform-daemons",
 )
 
 # TODO(bazel-ready): Commenting out because gnmi is not ready
@@ -232,25 +233,25 @@ bazel_dep(name = "rules_shell", version = "0.6.1")
 bazel_dep(name = "sonic-swss", version = "0.0.0", repo_name = "sonic_swss")
 local_path_override(
     module_name = "sonic-swss",
-    path = "../sonic-swss",
+    path = "src/sonic-swss",
 )
 
 bazel_dep(name = "sonic-sairedis", version = "0.0.0", repo_name = "sonic_sairedis")
 local_path_override(
     module_name = "sonic-sairedis",
-    path = "../sonic-sairedis",
+    path = "src/sonic-sairedis",
 )
 
 bazel_dep(name = "sai", version = "0.0.0")
 local_path_override(
     module_name = "sai",
-    path = "../sonic-sairedis/SAI",
+    path = "src/sonic-sairedis/SAI",
 )
 
 bazel_dep(name = "sonic-dash-api", version = "0.0.0", repo_name = "sonic_dash_api")
 local_path_override(
     module_name = "sonic-dash-api",
-    path = "../sonic-dash-api",
+    path = "src/sonic-dash-api",
 )
 
 # Needed for syncd
@@ -258,13 +259,13 @@ local_path_override(
 bazel_dep(name = "sonic-host-services", version = "0.0.0", repo_name = "sonic_host_services")
 local_path_override(
     module_name = "sonic-host-services",
-    path = "../sonic-host-services",
+    path = "src/sonic-host-services",
 )
 
 bazel_dep(name = "sonic-utilities", version = "0.0.0", repo_name = "sonic_utilities")
 local_path_override(
     module_name = "sonic-utilities",
-    path = "../sonic-utilities",
+    path = "src/sonic-utilities",
 )
 
 bazel_dep(name = "sonic-sysmgr", version = "0.0.0", repo_name = "sonic_sysmgr")
