@@ -53,6 +53,18 @@ def git_rev_parse(repo_path, short=False):
         return None
 
 
+def git_commit_message(repo_path):
+    """Return the subject line of the HEAD commit, or '' if unavailable."""
+    try:
+        result = subprocess.run(
+            ["git", "log", "-1", "--format=%s"],
+            cwd=repo_path, capture_output=True, text=True, check=True
+        )
+        return result.stdout.strip()
+    except subprocess.CalledProcessError:
+        return ""
+
+
 def git_grep_todo_bl(repo_path):
     """Return list of 'file:line' hits for 'BL:' in the repo, or [] if none."""
     try:
@@ -110,6 +122,49 @@ def git_branch(repo_path):
         return result.stdout.strip()
     except subprocess.CalledProcessError:
         return None
+
+
+def _parse_single_gitmodules(gitmodules_path):
+    """Parse a single .gitmodules file and return a dict mapping submodule path -> url."""
+    result = {}
+    try:
+        with open(gitmodules_path, "r") as f:
+            content = f.read()
+    except OSError:
+        return result
+    for block in re.finditer(
+        r'\[submodule\s+"[^"]*"\]\s*'
+        r'(?:(?!\[submodule).)*',
+        content, re.DOTALL,
+    ):
+        text = block.group(0)
+        path_m = re.search(r'path\s*=\s*(.+)', text)
+        url_m = re.search(r'url\s*=\s*(.+)', text)
+        if path_m and url_m:
+            result[path_m.group(1).strip()] = url_m.group(1).strip()
+    return result
+
+
+def parse_gitmodules(root_path):
+    """Parse .gitmodules in root_path and recursively in submodules.
+
+    Returns a dict mapping paths (relative to root_path) -> url.
+    For nested submodules (e.g. SAI inside sonic-sairedis), the path
+    is relative to root_path (e.g. "src/sonic-sairedis/SAI") and the
+    url comes from the parent submodule's .gitmodules.
+    """
+    result = {}
+    top_level = _parse_single_gitmodules(os.path.join(root_path, ".gitmodules"))
+    result.update(top_level)
+
+    # Check each submodule for its own .gitmodules (nested submodules).
+    for sub_path in list(top_level.keys()):
+        sub_abs = os.path.join(root_path, sub_path)
+        nested = _parse_single_gitmodules(os.path.join(sub_abs, ".gitmodules"))
+        for nested_rel, url in nested.items():
+            # Translate the nested-relative path to root-relative.
+            result[os.path.join(sub_path, nested_rel)] = url
+    return result
 
 
 def git_create_tag(repo_path, tag_name):
@@ -211,6 +266,10 @@ def repo_name(abs_path):
     parent = os.path.basename(os.path.dirname(abs_path))
     name = os.path.basename(abs_path)
     default = f"{parent}/{name}"
+    # For submodules under src/, use "sonic-net/<name>" as the display name
+    # to match the upstream repository naming convention.
+    if parent == "src" and name.startswith("sonic-"):
+        default = f"sonic-net/{name}"
     return REPO_NAME_OVERRIDES.get(default, default)
 
 
@@ -233,22 +292,25 @@ def parse_local_path_overrides(module_bazel_path):
 
 def process_repo(repo_path, visited, results, dirty_repos, unpushed_repos,
                  ignored_bazel_files, todo_hits, bazel_ready_hits,
-                 short=False, include_branch=False, parent_path=None,
-                 root_path=None):
+                 short=False, include_branch=False, include_message=False,
+                 parent_path=None, root_path=None, submodule_urls=None):
     abs_path = os.path.realpath(repo_path)
 
     if abs_path in visited:
         return
     visited.add(abs_path)
 
-    # Skip subdirectories that live under src/ of the root repo.
-    # These are sub-modules that share the root's git history and
-    # should not be treated as independent repositories.
+    # Skip subdirectories that live under the root repo but share its
+    # git history (i.e. are not their own git repository / submodule).
     if root_path:
         root_abs = os.path.realpath(root_path)
-        src_dir = os.path.join(root_abs, "src") + os.sep
-        if abs_path.startswith(src_dir):
-            return
+        if abs_path.startswith(root_abs + os.sep):
+            # It's inside the root tree. Only process it if it has its
+            # own .git (a submodule), otherwise it shares the root's
+            # git history and should be skipped.
+            git_marker = os.path.join(abs_path, ".git")
+            if not os.path.exists(git_marker):
+                return
 
     if not os.path.isdir(abs_path):
         print(f"Warning: path does not exist: {abs_path}", file=sys.stderr)
@@ -277,15 +339,33 @@ def process_repo(repo_path, visited, results, dirty_repos, unpushed_repos,
     if br_hits:
         bazel_ready_hits[abs_path] = br_hits
 
+    # For submodules under src/, show on-disk location and remote from .gitmodules.
+    # For repos outside src/, these columns stay empty.
+    effective_root = root_path or abs_path
+    root_abs = os.path.realpath(effective_root)
+    rel_path = os.path.relpath(abs_path, root_abs)
+    is_src_submodule = rel_path.startswith("src" + os.sep)
+
+    location = ""
+    remote = ""
+    if is_src_submodule:
+        location = rel_path
+        if submodule_urls:
+            remote = submodule_urls.get(rel_path, "")
+
     entry = {
         "repository": repo_name(abs_path),
         "path": abs_path,
+        "location": location,
+        "remote": remote,
         "commit": sha,
         "is_working": not bool(bl_hits),
         "is_bazel_ready": not bool(br_hits),
     }
     if include_branch:
         entry["branch"] = git_branch(abs_path) or "unknown"
+    if include_message:
+        entry["message"] = git_commit_message(abs_path)
     results.append(entry)
 
     module_bazel = os.path.join(abs_path, "MODULE.bazel")
@@ -296,28 +376,37 @@ def process_repo(repo_path, visited, results, dirty_repos, unpushed_repos,
     # The first repo processed is the root.
     effective_root = root_path or abs_path
 
+    # Parse .gitmodules once when processing the root repo.
+    if submodule_urls is None and root_path is None:
+        submodule_urls = parse_gitmodules(abs_path)
+
     for rel_path in parse_local_path_overrides(module_bazel):
         dep_path = os.path.join(abs_path, rel_path)
         process_repo(dep_path, visited, results, dirty_repos, unpushed_repos,
                      ignored_bazel_files, todo_hits, bazel_ready_hits,
                      short=short, include_branch=include_branch,
-                     parent_path=abs_path, root_path=effective_root)
+                     include_message=include_message,
+                     parent_path=abs_path, root_path=effective_root,
+                     submodule_urls=submodule_urls)
 
 
-def format_markdown(results, include_branch=False):
+def format_markdown(results, include_branch=False, include_message=False):
     headers = ["Repository", "Commit"]
-    if include_branch:
-        headers.append("Branch")
-
     keys = ["repository", "commit"]
     if include_branch:
+        headers.append("Branch")
         keys.append("branch")
+    if include_message:
+        headers.append("Message")
+        keys.append("message")
+    headers += ["Location", "Remote"]
+    keys += ["location", "remote"]
 
     # Compute column widths from headers and data.
     widths = [len(h) for h in headers]
     for r in results:
         for i, k in enumerate(keys):
-            widths[i] = max(widths[i], len(r[k]))
+            widths[i] = max(widths[i], len(r.get(k, "")))
 
     def row(cells):
         padded = [c.ljust(w) for c, w in zip(cells, widths)]
@@ -328,12 +417,12 @@ def format_markdown(results, include_branch=False):
         "|" + "|".join("-" * (w + 2) for w in widths) + "|",
     ]
     for r in results:
-        lines.append(row([r[k] for k in keys]))
+        lines.append(row([r.get(k, "") for k in keys]))
     return "\n".join(lines)
 
 
 def format_checkpoint_markdown(results, todo_bl_hits, todo_bazel_ready_hits,
-                                include_branch=False):
+                                include_branch=False, include_message=False):
     import datetime
     date_str = datetime.date.today().isoformat()
     lines = [f"# Checkpoint -- {date_str}", ""]
@@ -343,13 +432,18 @@ def format_checkpoint_markdown(results, todo_bl_hits, todo_bazel_ready_hits,
     if include_branch:
         headers.append("Branch")
         keys.append("branch")
-    headers += ["Working", "Bazel-Ready"]
+    if include_message:
+        headers.append("Message")
+        keys.append("message")
+    headers += ["Location", "Remote", "Working", "Bazel-Ready"]
 
     # Variable-width columns: compute from data
-    widths = [len(h) for h in headers[:len(keys)]]
+    extra_keys = ["location", "remote"]
+    all_keys = keys + extra_keys
+    widths = [len(h) for h in headers[:len(all_keys)]]
     for r in results:
-        for i, k in enumerate(keys):
-            widths[i] = max(widths[i], len(r[k]))
+        for i, k in enumerate(all_keys):
+            widths[i] = max(widths[i], len(r.get(k, "")))
     # Status columns: fixed to header width
     status_widths = [len("Working"), len("Bazel-Ready")]
     all_widths = widths + status_widths
@@ -363,7 +457,7 @@ def format_checkpoint_markdown(results, todo_bl_hits, todo_bazel_ready_hits,
     lines.append(row(headers))
     lines.append("|" + "|".join("-" * (w + 2) for w in all_widths) + "|")
     for r in results:
-        cells = [r[k] for k in keys] + [
+        cells = [r.get(k, "") for k in all_keys] + [
             CHECK if r["is_working"] else CROSS,
             CHECK if r["is_bazel_ready"] else CROSS,
         ]
@@ -451,6 +545,8 @@ def main():
     parser.add_argument("--run-tests", action="store_true",
                         help="Run test_working_targets.sh before creating a checkpoint "
                              "(tests always run before tagging)")
+    parser.add_argument("--include-message", action="store_true",
+                        help="Also show the subject line of the HEAD commit")
     args = parser.parse_args()
 
     results = []
@@ -462,7 +558,8 @@ def main():
     bazel_ready_hits = {}
     process_repo(args.repo, visited, results, dirty_repos, unpushed_repos,
                  ignored_bazel_files, todo_hits, bazel_ready_hits,
-                 short=args.short, include_branch=args.include_branch)
+                 short=args.short, include_branch=args.include_branch,
+                 include_message=args.include_message)
 
     if args.checkpoint:
         if args.run_tests and not run_tests(args.repo):
@@ -474,7 +571,8 @@ def main():
         else:
             print(format_checkpoint_markdown(
                 results, todo_hits, bazel_ready_hits,
-                include_branch=args.include_branch
+                include_branch=args.include_branch,
+                include_message=args.include_message
             ))
 
         if args.tag:
@@ -515,7 +613,8 @@ def main():
         if args.output_json:
             print(json.dumps(results, indent=2))
         else:
-            print(format_markdown(results, include_branch=args.include_branch))
+            print(format_markdown(results, include_branch=args.include_branch,
+                                  include_message=args.include_message))
     else:
         sys.exit(1)
 
