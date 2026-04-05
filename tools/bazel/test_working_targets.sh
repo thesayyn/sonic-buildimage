@@ -35,6 +35,8 @@ test_repo "src/sonic-dash-api" "bazel build ..."
 test_repo "src/sonic-swss-common" "bazel build ..."
 test_repo "src/sonic-swss" "bazel build ..."
 test_repo "src/sonic-p4rt/sonic-pins" "bazel build ..."
+test_repo "src/sonic-mgmt-common" "bazel build ..."
+test_repo "src/sonic-gnmi" "bazel build ..."
 
 echo "[= Testing Docker Images =]"
 
