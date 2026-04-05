@@ -13,6 +13,7 @@ tar(
         "telemetry_vars.j2",
     ],
     mtree = [
+        # TODO(bazel-ready): Add database_config.json if we're not reading from the main build.
         "./usr/bin/start.sh type=file contents=$(location :start.sh)",
         "./usr/bin/gnmi-native.sh type=file contents=$(location :gnmi-native.sh)",
         "./usr/bin/dialout.sh type=file contents=$(location :dialout.sh)",
@@ -33,6 +34,7 @@ oci_image(
         ":files",
         "@sonic-gnmi//:sonic-gnmi_pkg",
         "@sonic_swss_common//pyext:swsscommon_dist",
+        "@sonic_swss_common//:sonic-db-cli_pkg",
     ],
 )
 
