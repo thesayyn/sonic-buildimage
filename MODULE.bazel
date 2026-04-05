@@ -65,7 +65,7 @@ single_version_override(
 # with Bazel 8.5.x due to Facts.clear() API change. Minimum needed: 0.59.0.
 single_version_override(
     module_name = "rules_go",
-    version = "0.60.0",
+    version = "0.60.0.sonic-patched",
 )
 
 bazel_dep(name = "rules_boost", version = "0.0.0")
@@ -115,6 +115,7 @@ bazel_dep(name = "sonic-mgmt-common", version = "1.0.0")
 bazel_dep(name = "sonic-gnmi", version = "0.0.0")
 bazel_dep(name = "gazelle", version = "0.47.0")
 bazel_dep(name = "rules_go", version = "0.60.0.sonic-patched", repo_name = "io_bazel_rules_go")
+bazel_dep(name = "grpc", version = "1.71.1", repo_name = "com_github_grpc_grpc")
 
 # TODO(bazel-ready): Upgrade sonic-mgmt-common to at least go v1.24.5
 # In this common build, we need to pin the go version to a version that is compatible
@@ -166,3 +167,52 @@ bazel_dep(name = "sonic-sysmgr", version = "0.0.0", repo_name = "sonic_sysmgr")
 # Needed for teamd
 
 bazel_dep(name = "libteam", version = "1.31", repo_name = "libteam")
+
+# Needed for gnmi
+
+# SONiC-patched ygot/goyang/gnmi from sonic-mgmt-common's extension. The extension is not
+# root-only, so consumers of sonic-gnmi get these repos without any extra boilerplate.
+sonic_go_repos = use_extension("@sonic-mgmt-common//:go_repos.bzl", "sonic_go_repos")
+use_repo(
+    sonic_go_repos,
+    "com_github_golang_glog",
+    "com_github_google_gnxi",
+    "com_github_google_gousb",
+    "com_github_mitchellh_go_wordwrap",
+    "com_github_msteinert_pam",
+    "com_github_openconfig_gnmi",
+    "com_github_openconfig_gnoi",
+    "com_github_openconfig_gnsi",
+    "com_github_openconfig_goyang",
+    "com_github_openconfig_grpctunnel",
+    "com_github_openconfig_ygot",
+    "com_github_protocolbuffers_txtpbfmt",
+)
+
+# gazelle_override is root-only, so these must live here rather than in sonic-gnmi's MODULE.bazel.
+go_deps = use_extension("@gazelle//:extensions.bzl", "go_deps")
+
+# The BCR's C++ xds module shadows the Go xds module, preventing go_deps from
+# creating com_github_cncf_xds_go. Adding a gazelle_override causes go_deps to
+# skip the BCR module and create the Go repo instead (see go_deps.bzl line ~586).
+go_deps.gazelle_override(
+    directives = [
+        # BCR cel-spec and protoc-gen-validate are C++ modules without Go targets.
+        # Redirect to the go_deps-managed Go repos.
+        "gazelle:resolve go cel.dev/expr @dev_cel_expr//:expr",
+        "gazelle:resolve go github.com/envoyproxy/protoc-gen-validate/validate @com_github_envoyproxy_protoc_gen_validate//validate",
+    ],
+    path = "github.com/cncf/xds/go",
+)
+
+# Same BCR shadowing issue for cel-spec and protoc-gen-validate.
+go_deps.gazelle_override(
+    path = "cel.dev/expr",
+)
+go_deps.gazelle_override(
+    build_file_generation = "clean",
+    directives = [
+        "gazelle:prefix github.com/envoyproxy/protoc-gen-validate",
+    ],
+    path = "github.com/envoyproxy/protoc-gen-validate",
+)

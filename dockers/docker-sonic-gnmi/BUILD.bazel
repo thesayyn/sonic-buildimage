@@ -31,7 +31,7 @@ oci_image(
     },
     tars = [
         ":files",
-        "@sonic-gnmi//:gnmi_binaries",
+        "@sonic-gnmi//:sonic-gnmi_pkg",
         "@sonic_swss_common//pyext:swsscommon_dist",
     ],
 )

@@ -6,7 +6,8 @@ bazel_dep(name = "rules_cc", version = "0.2.14")
 bazel_dep(name = "tar.bzl", version = "0.9.0")
 bazel_dep(name = "bazel_lib", version = "3.1.1")
 bazel_dep(name = "protobuf", version = "33.4")
-bazel_dep(name = "openconfig_gnoi", version = "0.6.2")
+# TODO BL: Figure out how to do this.
+# bazel_dep(name = "openconfig_gnoi", version = "0.6.2")
 bazel_dep(name = "rules_distroless", version = "0.0.0", repo_name = "rules_deb")
 git_override(
     module_name = "rules_distroless",
