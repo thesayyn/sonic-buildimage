@@ -1,0 +1,11 @@
+--- a/uv/private/sdist_build/rule.bzl
++++ b/uv/private/sdist_build/rule.bzl
+@@ -70,6 +70,8 @@
+         outputs = [
+             wheel_dir,
+         ],
++        # Honor --action_env (e.g. CC=gcc); rules_python sysconfig defaults CC=clang, often missing on arm64.
++        use_default_shell_env = True,
+     )
+
+     return [
