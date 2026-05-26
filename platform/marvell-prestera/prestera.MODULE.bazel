@@ -1,0 +1,26 @@
+# Marvell Prestera: prebuilt mrvllibsai SAI (matches platform/marvell-prestera/sai.mk).
+# arm64 plugin; use with `common:marvell-prestera` (--platforms=//:linux_aarch64_sonic).
+
+MRVL_SAI_VERSION = "1.16.1-2"
+
+MRVL_SAI_BRANCH_PATH = "master"
+
+http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+extract_tar = use_repo_rule("@sonic_build_infra//tar:extract_tar.bzl", "extract_tar")
+
+http_archive(
+    name = "mrvllibsai_deb",
+    build_file = "//platform/broadcom:brcm_sai.BUILD",
+    sha256 = "9ac265b13a564b8206d53a10b4dc3fc90f9ec1a334250c6ebfb07ed56b4eedee",
+    url = "https://github.com/Marvell-switching/sonic-marvell-binaries/raw/master/arm64/sai-plugin/{branch}/mrvllibsai_{ver}_arm64.deb".format(
+        branch = MRVL_SAI_BRANCH_PATH,
+        ver = MRVL_SAI_VERSION,
+    ),
+)
+
+extract_tar(
+    name = "mrvllibsai",
+    archive = "@mrvllibsai_deb//:data.tar.xz",
+    build_file = "//platform/marvell-prestera:mrvllibsai.BUILD",
+)
