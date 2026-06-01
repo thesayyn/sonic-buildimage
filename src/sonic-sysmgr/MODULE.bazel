@@ -32,8 +32,9 @@ apt.sources_list(
     suites = ["bookworm"],
     uris = ["https://snapshot.debian.org/archive/debian/20251001T023456Z"],
 )
+# debian-security snapshot 20251001T023456Z has no bookworm-security binary-arm64 index.
 apt.sources_list(
-    architectures = ["amd64", "arm64"],
+    architectures = ["amd64"],
     components = ["main"],
     suites = ["bookworm-security"],
     uris = ["https://snapshot.debian.org/archive/debian-security/20251001T023456Z"],
