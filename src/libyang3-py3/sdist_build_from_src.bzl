@@ -113,6 +113,9 @@ def _sdist_build_from_src(ctx):
     command = """
 set -e
 EXECROOT="$PWD"
+# Use the host compiler for the CFFI extension; Bazel-built libyang is linked separately.
+export CC="${{CC:-gcc}}"
+export CXX="${{CXX:-g++}}"
 export LIBYANG_HEADERS="{headers}"
 export LIBYANG_LIBRARIES="{libraries}"
 export PATH="$PATH:/usr/bin"
@@ -153,6 +156,7 @@ cd "$EXECROOT/{srcdir}"
         inputs = src_files + [
             venv[VirtualenvInfo].home,
         ] + py_toolchain.files.to_list() + ctx.attr.venv[DefaultInfo].files.to_list() + cc_files + cc_toolchain_files + headers_files,
+        tools = cc_toolchain_files,
         outputs = [wheel_dir],
     )
 
