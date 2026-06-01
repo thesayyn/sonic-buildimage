@@ -23,6 +23,8 @@ bazel_dep(name = "rules_distroless", version = "0.0.0", repo_name = "rules_deb")
 git_override(
     module_name = "rules_distroless",
     commit = "ebfd74a2e07b83235e064bb63ace98a1a5223e02",
+    patches = ["//tools/bazel/patches:rules_distroless_apt_arm64_arch_union.patch"],
+    patch_strip = 1,
     remote = "https://github.com/bazel-contrib/rules_distroless",
 )
 
