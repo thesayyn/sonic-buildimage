@@ -2,14 +2,18 @@ apt = use_extension("@rules_deb//apt:extensions.bzl", "apt")
 apt.sources_list(
     architectures = ["amd64", "arm64"],
     components = ["main"],
-    suites = [
-        "bookworm",
-        "bookworm-updates",
-    ],
+    suites = ["bookworm"],
+    uris = ["https://snapshot.debian.org/archive/debian/20251001T023456Z"],
+)
+# bookworm-updates/security arm64 indexes are missing on snapshot 20251001T023456Z.
+apt.sources_list(
+    architectures = ["amd64"],
+    components = ["main"],
+    suites = ["bookworm-updates"],
     uris = ["https://snapshot.debian.org/archive/debian/20251001T023456Z"],
 )
 apt.sources_list(
-    architectures = ["amd64", "arm64"],
+    architectures = ["amd64"],
     components = ["main"],
     suites = ["bookworm-security"],
     uris = ["https://snapshot.debian.org/archive/debian-security/20251001T023456Z"],
