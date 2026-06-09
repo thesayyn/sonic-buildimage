@@ -1,7 +1,10 @@
 [package]
-name = "watchdog"
+name = "gnmi_watchdog"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-chrono = "0.4"
+
+[[bin]]
+name = "gnmi_watchdog"
+path = "src/main.rs"

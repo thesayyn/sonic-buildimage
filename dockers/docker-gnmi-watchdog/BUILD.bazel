@@ -1,0 +1,33 @@
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load")
+load("@tar.bzl", "tar")
+
+tar(
+    name = "source_files",
+    srcs = [
+        "supervisord.conf",
+        "//dockers/docker-gnmi-watchdog/watchdog:gnmi_watchdog",
+    ],
+    mtree = [
+        "./etc/supervisor/conf.d/supervisord.conf type=file content=$(location :supervisord.conf)",
+        "./usr/bin/gnmi_watchdog type=file mode=0755 content=$(location //dockers/docker-gnmi-watchdog/watchdog:gnmi_watchdog)",
+    ],
+)
+
+oci_image(
+    name = "docker-gnmi-watchdog",
+    base = "//dockers/docker-config-engine-bookworm",
+    entrypoint = ["/usr/bin/supervisord"],
+    env = {
+        "DEBIAN_FRONTEND": "noninteractive",
+    },
+    tars = [
+        ":source_files",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+oci_load(
+    name = "load",
+    image = ":docker-gnmi-watchdog",
+    repo_tags = ["docker-gnmi-watchdog:latest"],
+)
