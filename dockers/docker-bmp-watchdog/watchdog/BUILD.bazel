@@ -1,0 +1,12 @@
+load("@rules_rust//rust:defs.bzl", "rust_binary")
+
+rust_binary(
+    name = "bmp_watchdog",
+    srcs = ["src/main.rs"],
+    edition = "2021",
+    deps = [
+        "@crates_bmp_watchdog//:serde",
+        "@crates_bmp_watchdog//:serde_json",
+    ],
+    visibility = ["//visibility:public"],
+)
