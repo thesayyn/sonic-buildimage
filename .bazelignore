@@ -32,3 +32,6 @@ src/sonic-yang-models
 # TODO(bazel-ready): Make these modules work.
 src/dhcprelay
 src/sonic-genl-packet
+
+# Third-party platform modules with broken BUILD files (glob resolves relative to wrong dir)
+platform/broadcom/sonic-platform-modules-nokia
