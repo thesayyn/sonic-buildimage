@@ -37,6 +37,16 @@ rust.toolchain(
     versions = ["1.79.0"],
 )
 
+# Rust crate deps — one from_cargo hub per binary/workspace.
+crate = use_extension("@rules_rust//crate_universe:extensions.bzl", "crate")
+
+crate.from_cargo(
+    name = "crates_bmp_watchdog",
+    cargo_lockfile = "//dockers/docker-bmp-watchdog/watchdog:Cargo.lock",
+    manifests = ["//dockers/docker-bmp-watchdog/watchdog:Cargo.toml"],
+)
+use_repo(crate, "crates_bmp_watchdog")
+
 python = use_extension("@rules_python//python/extensions:python.bzl", "python")
 python.toolchain(python_version = "3.11.6")
 
