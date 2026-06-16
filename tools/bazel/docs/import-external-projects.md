@@ -85,6 +85,7 @@ We recommend the flag `--override_module` to make this easier ([docs](https://ba
 - Once your build passes in `sonic-buildimage`, you can head back to your local clone of the ruleset and extract the diff: `cd /home/.../path/to/rules_go && git diff > my_patch.patch`.
 
 That will yield patch files ready to be copied into the SONiC Bazel Registry.
+
 ## Method 2: Pull a Debian archive using `rules_distroless`
 
 This one is simple: If the dependency is available from Debian repositories, and you don't want to patch it, you should be able to import the `deb` directly through [`rules_distroless`](https://github.com/thesayyn/sonic-buildimage/blob/9033053ebfee08c63fc22ef414b9f8cd2b82c766/dockers/docker-base-bookworm/base_bookworm.MODULE.bazel#L1-L160).
@@ -97,6 +98,7 @@ If you need to patch the dependency, but it is _not_ in the BCR (and therefore n
 This method works best with small, well-understood libraries that don't change very often, such as [`libnl3`](/src/libnl3). The more complicated the build process for a particular dependency, the harder it will be to port it to Bazel.
 
 To import a dependency into Bazel, we're going to work in two stages:
+
 ### First, we make the project build with Bazel as a standalone
 
 We're going to forget about SONiC for a moment, and just try to make the specific library work with Bazel.
@@ -111,6 +113,7 @@ If we follow the example of `libnl3` this would entail:
 Of course, step 4 is an oversimplification -- every project is different, and their builds will require more or less care. In addition, this is the point where you may decide the project is not worth the hassle, and move onto [Method 4](#method-4-build-the-dependency-out-of-band-and-import-it-into-bazel-as-an-opaque-archive).
 
 LLMs do a decent job at generating these `BUILD.bazel` files, but please double-check their output. Often, old projects that rely on e.g. autotools will have configuration flags that affect what compiler flags a target is built with, and the LLMs may not be aware of which configuration you want. If necessary, compare the flags produced by the current SONiC build with the ones Bazel uses, using [`--subcommands`](https://bazel.build/reference/command-line-reference#build-flag--subcommands).
+
 ### Then, we import the project into the SONiC build
 
 Once we have a working Bazel build, we have to import it to SONiC. To do that, we're going to recreate the process we've just done (clone, apply the patches, then overlay the Bazel build) but within Bazel. For an example, please refer to [`src/libnl3`](/src/libnl3).
@@ -195,6 +198,7 @@ $ cat tools/bazel/registry/modules/libnl3/3.7.0/source.json
 As you can see, `MODULE.bazel` is just a symlink to the `src/libnl3/MODULE.bazel` we just created, and `source.json` is just telling Bazel to look in a local directory for the actual implementation of the module.
 
 Now, anything that needs `libnl3` can depend on it with `bazel_dep(name = "libnl3", version = "3.7.0")`, and use `@libnl3//:libnl_3` in its build, just like any other package from the BCR. 
+
 ## Method 4: Build the dependency out of band, and import it into Bazel as an opaque archive.
 
 Sometimes, a dependency's build process is too convoluted, and it's not worth porting to Bazel. For instance, we may need to patch Python itself, a project famous for being hard to compile in the best of times.
@@ -202,12 +206,15 @@ Sometimes, a dependency's build process is too convoluted, and it's not worth po
 In those cases, we should treat the dependency as opaque artifacts, and download them like we would download any other prebuilt version of it. Specifically:
 
 1. Patch and build the dependency somewhere outside of the Bazel build, following the project's own build instructions. For instance, this could mean spinning up a development container to build the appropriate version of Python.
+
+    > [!tip] If you want an environment that is close to the containers being deployed, you can use `oci_image` and `oci_load` to create an image that you can load normally into docker. For instance, the example in [examples/builder-image](examples/builder-image/BUILD.bazel) builds an image with the development versions of libraries used by our hermetic toolchain, as well as some internally-built code. This is just an example to illustrate how you can build a development container that has runtime libraries installed.
+
 2. Capture the outputs in a way that is consumable by Bazel. In most cases, the outputs of this build will be a series of headers and `.so` files that you can bundle into a tar archive. Or, in the case of Python, it may just produce the archive itself as a product of the build.
 3. Place the outputs somewhere reachable, like a cloud bucket or a public GitHub release (e.g. [`gcc-builds`](https://github.com/f0rmiga/gcc-builds) publishes repacks of the gcc toolchain).
 4. Add it to the SONiC Bazel Registry, to make the dependency reachable.
 
 > [!warning]
-> As you may have noticed, this method is the worst of them all, because it means we cannot build from source. If we ever have to make a change to our patches, or upgrade the versions of that dependency, we'll have to figure out how to build another artifact, and push it to Artifactory all over again.
+> As you may have noticed, this method is the worst option, because it means we cannot build from source. If we ever have to make a change to our patches, or upgrade the versions of that dependency, we'll have to figure out how to build another artifact, and push it to Artifactory all over again.
 
 ### Add it to the SONiC Bazel Registry
 

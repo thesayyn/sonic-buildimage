@@ -64,6 +64,18 @@ apt.install(
         "sshpass",
         "strace",
 
+        # from https://github.com/thesayyn/sonic-build-infra/blob/bda54083b511394853921900a6d65b166e8dba8b/MODULE.bazel#L58-L78
+        # Libraries the toolchain in sonic-build-infra is allowed to link against.
+        # these are handy if we want containers that resemble our runtime environment
+        # at build time (e.g. to build an external dependency out of band).
+        #
+        # See //tools/bazel/docs/examples/builder-image/BUILD.bazel for an example.
+        "libstdc++-12-dev",
+        "libstdc++6",
+        "linux-libc-dev",
+        "libc6-dev",
+        "libgcc-12-dev",
+
         # from docker-swss-layer-bookworm/Dockerfile.j2
         "iputils-ping",
 

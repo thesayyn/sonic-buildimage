@@ -1,0 +1,44 @@
+load("@rules_deb//distroless:defs.bzl", "flatten")
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load")
+load("@tar.bzl", "tar")
+
+flatten(
+    name = "apt_deps",
+    deduplicate = True,
+    tars = [
+        "@bookworm//bash",
+
+        # Libraries that our toolchain links against,
+        # so that you can link against them too.
+        "@bookworm//libstdc++-12-dev",
+        "@bookworm//libstdc++6",
+        "@bookworm//linux-libc-dev",
+        "@bookworm//libc6-dev",
+        "@bookworm//libgcc-12-dev",
+
+
+        # Read libteam and libteandctl from our internal (patched) code.
+        "@libteam//:libteam5_pkg",
+        "@libteam//:libteamdctl0_pkg",
+    ],
+)
+
+oci_image(
+    name = "example-sonic-builder",
+    architecture = "amd64",
+    os = "linux",
+    entrypoint = ["/bin/bash"],
+    env = {
+        "DEBIAN_FRONTEND": "noninteractive",
+    },
+    tars = [
+        ":apt_deps",
+        "@sonic_swss_common//pyext:swsscommon_dist",
+    ],
+)
+
+oci_load(
+    name = "load",
+    image = ":example-sonic-builder",
+    repo_tags = ["example-sonic-builder:latest"],
+)
