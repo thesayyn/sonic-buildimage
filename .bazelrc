@@ -17,3 +17,16 @@ common:vs --@sonic_build_infra//:sai=@sai//lib:sai
 common:broadcom --@sonic_build_infra//:asic_manufacturer=broadcom
 common:broadcom --@sonic_build_infra//:sai=@libsaibcm_xgs-dev//:sai
 
+# For Marvell Prestera: arm64 mrvllibsai + OCI layers aligned with linux_aarch64_sonic.
+common:marvell-prestera --@sonic_build_infra//:asic_manufacturer=marvell-prestera
+common:marvell-prestera --@sonic_build_infra//:sai=@mrvllibsai//:sai
+common:marvell-prestera --platforms=//:linux_aarch64_sonic
+# aspect_rules_py sdist builds (e.g. netifaces) pick up CC from the environment; many
+# arm64 hosts default to clang, which is often not installed in minimal SONiC dev images.
+common:marvell-prestera --action_env=CC=gcc
+common:marvell-prestera --action_env=CXX=g++
+
+# Native AArch64 target (hermetic GCC + merged Bookworm arm64 sysroot in sonic-build-infra).
+common:aarch64-native --platforms=//:linux_aarch64_sonic
+common:aarch64-native --action_env=CC=gcc
+common:aarch64-native --action_env=CXX=g++

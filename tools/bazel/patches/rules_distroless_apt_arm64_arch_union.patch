@@ -1,0 +1,21 @@
+diff --git a/apt/extensions.bzl b/apt/extensions.bzl
+index 1111111..2222222 100644
+--- a/apt/extensions.bzl
++++ b/apt/extensions.bzl
+@@ -334,6 +334,15 @@ def _distroless_extension(mctx):
+                         continue
+ 
+                     source = sources[package["Dist"]]
+                     architectures = source["architectures"]
++                    # If the amd64 probe picked a suite whose source is amd64-only
++                    # (e.g. bookworm-security without binary-arm64 on a snapshot), still
++                    # resolve arm64 when bookworm main lists it.
++                    if "bookworm" in sources and package["Dist"] != "bookworm":
++                        architectures = architectures + [
++                            arch
++                            for arch in sources["bookworm"]["architectures"]
++                            if arch not in architectures
++                        ]
+ 
+                 for arch in architectures:
+                     resolution_queue.append((

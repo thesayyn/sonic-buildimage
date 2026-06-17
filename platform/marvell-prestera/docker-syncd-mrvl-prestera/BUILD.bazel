@@ -1,0 +1,97 @@
+load("@rules_deb//distroless:defs.bzl", "flatten")
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load")
+load("@tar.bzl", "tar")
+
+flatten(
+    name = "debian_packages",
+    deduplicate = True,
+    tars = [
+        "@bookworm//iproute2:data",
+        "@bookworm//libcap2-bin:data",
+        "@bookworm//net-tools:data",
+        "@bookworm//iputils-ping:data",
+        "@bookworm//kmod:data",
+        "@bookworm//ethtool:data",
+        "@bookworm//libpcap-dev:data",
+    ],
+)
+
+flatten(
+    name = "syncd",
+    deduplicate = True,
+    tars = [
+        "@sonic_sairedis//meta:libsaimetadata_pkg",
+        "@sonic_sairedis//lib:libsairedis_dev_pkg",
+    ],
+)
+
+tar(
+    name = "mrvllibsai_layer",
+    srcs = ["@mrvllibsai//:all_files"],
+)
+
+filegroup(
+    name = "rdeps",
+    srcs = [
+        ":syncd",
+        ":mrvllibsai_layer",
+        "//src/sonic-device-data:sonic-device-data_all_pkg",
+        "@libteam//:libteam-utils_pkg",
+        "@libteam//:libteamdctl0_pkg",
+        "@libyang3//:libyang3_pkg",
+        "@libyang3_py3//:libyang3-python_pkg",
+        "@sonic_host_services//data:sonic-host-services-data_all_pkg",
+        "@sonic_swss_common//pyext:swsscommon_pkg",
+        "@sonic_sysmgr//:sysmgr_pkg",
+        "@sonic_utilities//sonic-utilities-data:sonic-utilities-data_all_pkg",
+    ],
+)
+
+filegroup(
+    name = "py_deps",
+    srcs = [
+        "@sonic_host_services//:sdist",
+        "@sonic_platform_common//:dist",
+        "@sonic_py_common//:dist",
+        "@sonic_utilities//:dist",
+        "@sonic_yang_mgmt//:dist",
+        "@sonic_yang_models//:dist",
+    ],
+)
+
+tar(
+    name = "loose_files",
+    srcs = [
+        "critical_processes",
+        "supervisord.conf",
+        "syncd_start.sh",
+    ],
+    mtree = [
+        "./usr/bin/syncd_start.sh type=file mode=755 content=$(location :syncd_start.sh)",
+        "./etc/supervisor/conf.d/supervisord.conf type=file content=$(location :supervisord.conf)",
+        "./etc/supervisor/critical_processes type=file content=$(location :critical_processes)",
+    ],
+)
+
+oci_image(
+    name = "docker-syncd-mrvl-prestera",
+    base = "//dockers/docker-config-engine-bookworm",
+    entrypoint = ["/usr/bin/supervisord"],
+    env = {
+        "DEBIAN_FRONTEND": "noninteractive",
+    },
+    tars = [
+        ":debian_packages",
+        ":rdeps",
+        ":py_deps",
+        ":loose_files",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+oci_load(
+    name = "load",
+    image = ":docker-syncd-mrvl-prestera",
+    repo_tags = ["docker-syncd-mrvl-prestera:latest"],
+    visibility = ["//visibility:public"],
+)

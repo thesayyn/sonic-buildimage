@@ -1,5 +1,8 @@
+load("@sonic_build_infra//link:bookworm_libbsd_arm64_link.bzl", "bookworm_libbsd_arm64_additional_linker_inputs", "bookworm_libbsd_arm64_copy", "bookworm_libbsd_arm64_linkopts")
 load("//:flags.bzl", "CFLAGS_ASAN", "CFLAGS_COMMON", "DBGFLAGS", "LDFLAGS_ASAN")
 load("//:gnoi.bzl", "gnoi_proto_lib")
+
+bookworm_libbsd_arm64_copy()
 
 # TODO(bazel-ready): Support debug
 # if DEBUG
@@ -54,7 +57,8 @@ cc_binary(
     defines = [
         "BAZEL",
     ],
-    linkopts = LDFLAGS_ASAN,
+    linkopts = bookworm_libbsd_arm64_linkopts(base = LDFLAGS_ASAN),
+    additional_linker_inputs = bookworm_libbsd_arm64_additional_linker_inputs(),
     visibility = ["//:__subpackages__"],
     deps = [
         ":common_cc_proto",

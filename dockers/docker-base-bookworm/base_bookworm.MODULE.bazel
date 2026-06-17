@@ -1,11 +1,15 @@
 apt = use_extension("@rules_deb//apt:extensions.bzl", "apt")
 apt.sources_list(
+    architectures = ["amd64", "arm64"],
+    components = ["main"],
+    suites = ["bookworm"],
+    uris = ["https://snapshot.debian.org/archive/debian/20251001T023456Z"],
+)
+# bookworm-updates/security arm64 indexes are missing on snapshot 20251001T023456Z.
+apt.sources_list(
     architectures = ["amd64"],
     components = ["main"],
-    suites = [
-        "bookworm",
-        "bookworm-updates",
-    ],
+    suites = ["bookworm-updates"],
     uris = ["https://snapshot.debian.org/archive/debian/20251001T023456Z"],
 )
 apt.sources_list(
@@ -16,7 +20,8 @@ apt.sources_list(
 )
 apt.install(
     dependency_set = "bookworm",
-    packages = [ # do not sort
+    packages = [
+        # do not sort
         "base-files",
         "ca-certificates",
         "libc6",
@@ -40,6 +45,7 @@ apt.install(
         "procps",
         "python3",
         "python-is-python3",
+        "python3-dev",
         "vim-tiny",
         "rsyslog",
         "redis-tools",
@@ -55,6 +61,10 @@ apt.install(
         "libgmp10",
         "libgmpxx4ldbl",
         "libpcre2-8-0",
+        "libhiredis-dev",
+        "libboost-serialization-dev",
+        "uuid-dev",
+        "libzmq3-dev",
         "libyang2-dev",
         # for debug docker images.
         "gdb",
@@ -142,11 +152,12 @@ apt.install(
         # from dockers/docker-database
         # "redis-tools", already installed
         "redis-server",
-        "gawk", # Not required directly, but used in the container startup script
+        "gawk",  # Not required directly, but used in the container startup script
 
         # from dockers/docker-sysmgr
         # "libdbus-1-3", already installed
         "libdbus-c++-1-0v5",
+
     ],
     suites = [
         "bookworm",

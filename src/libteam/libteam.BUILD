@@ -1,7 +1,10 @@
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library", "cc_shared_library")
 load("@rules_deb//distroless:defs.bzl", "flatten")
+load("@sonic_build_infra//link:bookworm_libbsd_arm64_link.bzl", "bookworm_libbsd_arm64_additional_linker_inputs", "bookworm_libbsd_arm64_copy", "bookworm_libbsd_arm64_linkopts")
 load("@tar.bzl", "mutate", "tar")
+
+bookworm_libbsd_arm64_copy()
 
 # From configure.ac: AC_SUBST(LIBTEAM_{CURRENT,REVISION,AGE}, ...)
 LIBTEAM_CURRENT = 11
@@ -104,16 +107,21 @@ cc_library(
     visibility = ["//visibility:public"],
 )
 
+LIBTEAMDCTL_SO_LINKOPTS = bookworm_libbsd_arm64_linkopts(base = [
+    "-Wl,-soname,libteamdctl.so.{}".format(LIBTEAMDCTL_SOVERSION),
+    "-Wl,--gc-sections",
+    "-Wl,--as-needed",
+])
+
+LIBTEAMDCTL_SO_EXTRA_LINKER_INPUTS = bookworm_libbsd_arm64_additional_linker_inputs()
+
 # TODO(bazel-ready): Fix the libbsd issue in `rules_distroless`, then switch to cc_shared_library.
 cc_binary(
     name = "teamdctl", # Note: Bazel will produce libteamdctl.so from this name.
     deps = [":libteamdctl"],
     linkshared = True,
-    linkopts = [
-        "-Wl,-soname,libteamdctl.so.{}".format(LIBTEAMDCTL_SOVERSION),
-        "-Wl,--gc-sections",
-        "-Wl,--as-needed",
-    ],
+    linkopts = LIBTEAMDCTL_SO_LINKOPTS,
+    additional_linker_inputs = LIBTEAMDCTL_SO_EXTRA_LINKER_INPUTS,
     visibility = ["//visibility:public"],
 )
 
@@ -251,6 +259,8 @@ cc_binary(
         "@libteam_deps//libdbus-1-dev:libdbus-1",
         "@libteam_deps//libzmq3-dev:libzmq3",
     ],
+    linkopts = bookworm_libbsd_arm64_linkopts(),
+    additional_linker_inputs = bookworm_libbsd_arm64_additional_linker_inputs(),
     visibility = ["//visibility:public"],
 )
 
@@ -269,6 +279,8 @@ cc_binary(
         ":include_headers",
         "@libteam_deps//libjansson-dev:libjansson",
     ],
+    linkopts = bookworm_libbsd_arm64_linkopts(),
+    additional_linker_inputs = bookworm_libbsd_arm64_additional_linker_inputs(),
     visibility = ["//visibility:public"],
 )
 

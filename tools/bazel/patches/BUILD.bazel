@@ -1,0 +1,4 @@
+exports_files([
+    "aspect_rules_py_sdist_use_default_shell_env.patch",
+    "rules_distroless_apt_arm64_arch_union.patch",
+])

@@ -122,7 +122,11 @@ flatten(
 
 oci_image(
     name = "docker-base-bookworm",
-    architecture = "amd64",
+    architecture = select({
+        "//:target_linux_aarch64": "arm64",
+        "//:target_linux_x86_64": "amd64",
+        "//conditions:default": "amd64",
+    }),
     entrypoint = ["/usr/bin/supervisord"],
     env = {
         "DEBIAN_FRONTEND": "noninteractive",

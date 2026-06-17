@@ -16,11 +16,12 @@ git_override(
 # Get pcre2 from Debian bookworm
 apt = use_extension("@rules_deb//apt:extensions.bzl", "apt")
 apt.sources_list(
-    architectures = ["amd64"],
+    architectures = ["amd64", "arm64"],
     components = ["main"],
     suites = ["bookworm"],
     uris = ["https://snapshot.debian.org/archive/debian/20251001T023456Z"],
 )
+# debian-security snapshot 20251001T023456Z has no bookworm-security binary-arm64 index.
 apt.sources_list(
     architectures = ["amd64"],
     components = ["main"],

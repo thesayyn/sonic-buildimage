@@ -1,0 +1,37 @@
+# Host / target platform for Bazel builds that use sonic-build-infra's hermetic GCC + sysroot.
+platform(
+    name = "linux_x86_64_sonic",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:x86_64",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+platform(
+    name = "linux_aarch64_sonic",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:aarch64",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+# For `select()` in OCI / packaging rules when `--platforms=//:linux_*_sonic`.
+config_setting(
+    name = "target_linux_aarch64",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:aarch64",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+config_setting(
+    name = "target_linux_x86_64",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:x86_64",
+    ],
+    visibility = ["//visibility:public"],
+)
